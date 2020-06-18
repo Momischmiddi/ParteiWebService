@@ -10,7 +10,7 @@ WORKDIR /src
 COPY ["ParteiWebService/ParteiWebService.csproj", "ParteiWebService/"]
 RUN dotnet restore "ParteiWebService/ParteiWebService.csproj"
 COPY . .
-WORKDIR "/src/ParteiPDFGenerator"
+WORKDIR "/src/ParteiWebService"
 RUN dotnet build "ParteiWebService.csproj" -c Release -o /app/build
 
 FROM build AS publish

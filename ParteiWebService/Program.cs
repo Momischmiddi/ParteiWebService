@@ -9,7 +9,7 @@ namespace Aufgabe_2
         public static void Main(string[] args)
         {
             BlobManager.Setup();
-            CosmosManager.Setup();
+            //CosmosManager.Setup();
             CreateHostBuilder(args).Build().Run();
         }
 

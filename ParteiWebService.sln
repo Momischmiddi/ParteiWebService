@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParteiWebService", "ParteiWebService\ParteiWebService.csproj", "{796F5EE4-831F-4CC8-831B-0218BF0FC148}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccessLibrary", "DataAccessLibrary\DataAccessLibrary.csproj", "{35DB782A-D899-418F-8BB5-E1C9A99EC5C9}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{796F5EE4-831F-4CC8-831B-0218BF0FC148}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{796F5EE4-831F-4CC8-831B-0218BF0FC148}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{796F5EE4-831F-4CC8-831B-0218BF0FC148}.Release|Any CPU.Build.0 = Release|Any CPU
-		{35DB782A-D899-418F-8BB5-E1C9A99EC5C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{35DB782A-D899-418F-8BB5-E1C9A99EC5C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{35DB782A-D899-418F-8BB5-E1C9A99EC5C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{35DB782A-D899-418F-8BB5-E1C9A99EC5C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
