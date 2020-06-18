@@ -1,0 +1,70 @@
+﻿@model DataAccessLibrary.Models.Member
+<!-- MODAL SECTION -->
+<div class="modal fade" id="addMitgliederModal" tabindex="-1" role="dialog" aria-labelledby="addMitgliederModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Mitglied hinzufügen</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form asp-action="AddMember" asp-controller="Home">
+                <div class="modal-body">
+                    <div class="row">
+                        @Html.HiddenFor(m => m.ID)
+                        <div class="form-group col">
+                            <label asp-for="PreName"></label>
+                            <input class="form-control" placeholder="Vorname eingeben" asp-for="PreName" required>
+                        </div>
+                        <div class="form-group col">
+                            <label asp-for="LastName"></label>
+                            <input class="form-control" placeholder="Nachname eingeben" asp-for="LastName" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-4">
+                            <label asp-for="Home"></label>
+                            <input class="form-control" placeholder="Wohnort eingeben" asp-for="Home" required>
+                        </div>
+                        <div class="form-group col-4">
+                            <label asp-for="PostCode"></label>
+                            <input class="form-control" placeholder="Postleitzahl eingeben" asp-for="PostCode" required>
+                        </div>
+                        <div class="form-group col-4">
+                            <label asp-for="Adress"></label>
+                            <input class="form-control" placeholder="Addresse eingeben" asp-for="Adress" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <label asp-for="DateOfBirth"></label>
+                            <input class="form-control" asp-for="DateOfBirth" type="date">
+                        </div>
+                        <div class="form-group col">
+                            <label asp-for="Contribution"></label>
+                            <input class="form-control" asp-for="Contribution" required>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="form-group col-2 mt-4">
+                            <div class="custom-control custom-checkbox">
+                                <input asp-for="IsActiveMember" type="checkbox" class="custom-control-input">
+                                <label asp-for="IsActiveMember" class="custom-control-label"></label>
+                            </div>
+                        </div>
+                        <div id="emailContainer" class="form-group col-10" style="visibility: hidden;">
+                            <label asp-for="ApplicationUser.Email"></label>
+                            <input asp-for="ApplicationUser.Email" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
+                    <button type="submit" class="btn btn-primary">Speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

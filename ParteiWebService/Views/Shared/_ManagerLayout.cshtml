@@ -1,0 +1,191 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using DataAccessLibrary.Models
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Aufgabe_2</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="~/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+    <link href="~/css/sb-admin-2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link href="~/lib/fontawesome-free/css/all.css" rel="stylesheet" />
+    <link href="~/css/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+    <style>
+        .vereins_logo {
+            margin-top: 30px;
+            vertical-align: middle;
+            width: 60px;
+            height: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+                        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                        <li class="nav-item dropdown no-arrow d-sm-none">
+                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-search fa-fw"></i>
+                            </a>
+                            <!-- Dropdown - Messages -->
+                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
+                                <form class="form-inline mr-auto w-100 navbar-search">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" type="button">
+                                                <i class="fas fa-search fa-sm"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </li>
+
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+                        <!-- Nav Item - User Avatar -->
+                        <li class="nav-item avatar dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="~/demoImages/img_avatar.png" class="rounded-circle z-depth-0"
+                                     alt="avatar image" height="35">
+                            </a>
+
+                        </li>
+                        <!-- Nav Item - User Information -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">@User.Identity.Name</span>
+                            </a>
+
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown" id="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Einstellungen
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/Account/Logout">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Logout
+                                </a>
+                            </div>
+
+                        </li>
+
+                    </ul>
+
+                </nav>
+                <!-- End of Topbar -->
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <div class="container">
+                        <main role="main" class="pb-3">
+                            @RenderBody()
+                        </main>
+                    </div>
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/sb-admin-2.min.js"></script>
+    <script src="~/js/jquery.dataTables.min.js"></script>
+    <script src="~/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/bootstrap-select.min.js"></script>
+    <script src="~/js/defaults-de_DE.js"></script>
+    <script type="text/javascript">
+        // Call the dataTables jQuery plugin
+        $(document).ready(function () {
+
+            $("#IsActiveMember").click(function () {
+                if ($(this).is(':checked')) {
+                    toggleEmailVisibility(true);
+                }
+                else {
+                    toggleEmailVisibility(false);
+                }
+            });
+
+            function toggleEmailVisibility(checked) {
+                console.log(checked);
+                var x = document.getElementById('emailContainer');
+                if (checked) {
+                    x.style.visibility = 'visible';
+                }
+                else {
+                    x.style.visibility = 'hidden';
+                }
+            }
+
+
+            $('.nav  li').click(function (e) {
+                //console.log(e.currentTarget,"//",e.target,"//",this);
+                e.stopPropagation();
+                $('.nav li').removeClass('active');
+                $(this).addClass('active');
+            });
+            $('.selectpicker').selectpicker();
+            $('#dataTable').DataTable(
+                {
+                    "language": {
+                        "sEmptyTable": "Keine Daten in der Tabelle vorhanden",
+                        "sInfo": "_START_ bis _END_ von _TOTAL_ Einträgen",
+                        "sInfoEmpty": "0 bis 0 von 0 Einträgen",
+                        "sInfoFiltered": "(gefiltert von _MAX_ Einträgen)",
+                        "sInfoPostFix": "",
+                        "sInfoThousands": ".",
+                        "sLengthMenu": "_MENU_ Einträge anzeigen",
+                        "sLoadingRecords": "Wird geladen...",
+                        "sProcessing": "Bitte warten...",
+                        "sSearch": "Suchen",
+                        "sZeroRecords": "Keine Einträge vorhanden.",
+                        "oPaginate": {
+                            "sFirst": "Erste",
+                            "sPrevious": "Zurück",
+                            "sNext": "Nächste",
+                            "sLast": "Letzte"
+                        },
+                        "oAria": {
+                            "sSortAscending": ": aktivieren, um Spalte aufsteigend zu sortieren",
+                            "sSortDescending": ": aktivieren, um Spalte absteigend zu sortieren"
+                        }
+                    }
+
+                });
+        });
+    </script>
+    <script src="~/lib/fontawesome-free/js/all.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

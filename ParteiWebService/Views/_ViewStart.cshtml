@@ -1,0 +1,20 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using DataAccessLibrary.Models
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    if (SignInManager.IsSignedIn(User) && !User.IsInRole("Admin"))
+    {
+        Layout = "_Layout";
+    }
+    else if(User.IsInRole("Admin"))
+    {
+        Layout = "_ManagerLayout";
+    }
+    else
+    {
+        Layout = "_Account";
+    }
+}

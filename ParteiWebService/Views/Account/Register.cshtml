@@ -1,0 +1,16 @@
+﻿
+@{
+    ViewData["Title"] = "Register";
+}
+
+<form action="/Account/Register" method="post" class="form-signin text-center">
+    <img class="mb-4" src="~/images/geschaeft.png" alt="" width="72" height="72">
+    <h1 class="h3 mb-3 font-weight-normal">Registrieren</h1>
+    <label for="username" class="sr-only">Benutzername</label>
+    <input type="text" id="username" name="username" class="form-control" placeholder="Benutzername" required="" autofocus="">
+    <label for="password" class="sr-only">Password</label>
+    <input type="password" name="password" id="password" class="form-control" placeholder="Passwort" required="">
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Registrieren</button>
+    <p class="mt-5 mb-3 text-muted">© 2020</p>
+</form>
+

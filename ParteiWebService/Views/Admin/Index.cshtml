@@ -1,0 +1,36 @@
+﻿@model List<DataAccessLibrary.Models.Organization>
+@{
+    ViewData["Title"] = "Index";
+    var rowCounter = 1;
+}
+<h1>Vereine verwalten</h1>
+
+<a href="/Admin/CreateOrganization" class="d-none d-sm-inline-block btn btn-primary btn-icon-split">
+    <span class="icon text-white-50">
+        <i class="fas fa-user-plus"></i>
+    </span>
+    <span class="text">Verein hinzufügen</span>
+</a>
+<div class="adminrow row">
+    @foreach (var item in Model)
+    {
+        if (rowCounter % 3 == 1)
+        {
+        @:</div>
+        @:<div class="adminrow row mt-3">
+        }
+        <div class="col col-4">
+            <div class="card">
+                <img class="card-img-top" src="..." alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Last updated 3 mins ago</small>
+                </div>
+            </div>
+        </div>
+        rowCounter = rowCounter + 1;
+    }
+</div>

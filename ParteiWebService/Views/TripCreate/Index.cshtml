@@ -1,0 +1,96 @@
+﻿@using DataAccessLibrary.Models
+@model Travel
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Reise anlegen</h1>
+    </div>
+
+    <form asp-action="AddTravel" asp-controller="TripCreate" method="post" enctype="multipart/form-data">
+        <div class="row ">
+            <div class="col-lg-8">
+                @Html.HiddenFor(m => Model.TravelId)
+                <div class="form-group">
+                    <label for="exampleFormControlInput1" asp-for="Destination"></label>
+                    <input type="text" class="form-control" asp-for="Destination" placeholder="@Html.DisplayNameFor(model => model.Destination)" required>
+                </div>
+            </div>
+        </div>
+        <div class="row ">
+            <div class="col-lg-8">
+                <div class="form-group">
+                    <label for="exampleFormControlTextarea1" asp-for="Description"></label>
+                    <textarea class="form-control" asp-for="Description" rows="3" placeholder="@Html.DisplayNameFor(model => model.Description)" required></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row ">
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="exampleFormControlInput1" asp-for="StartDate"></label>
+                    <input type="date" class="form-control" asp-for="StartDate" placeholder="@Html.DisplayNameFor(model => model.StartDate)" required>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="exampleFormControlInput1" asp-for="EndDate"></label>
+                    <input type="date" class="form-control" asp-for="EndDate" placeholder="@Html.DisplayNameFor(model => model.EndDate)" required>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="form-group">
+                    <label for="exampleFormControlInput1" asp-for="Departure"></label>
+                    <input type="text" class="form-control" asp-for="Departure" placeholder="@Html.DisplayNameFor(model => model.Departure)" required>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="form-group">
+                    <label for="exampleFormControlInput1" asp-for="Costs"></label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">€</span>
+                        </div>
+                        <input type="number" min="0.00" step="0.50" value="1.00" asp-for="Costs" class="form-control" required>
+                        <div class="input-group-append">
+                            <span class="input-group-text">pro Person</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="form-group">
+                    <label for="exampleFormControlInput1" asp-for="MaxTraveler"></label>
+                    <div class="input-group">
+                        <input type="number" step="1" value="1" asp-for="MaxTraveler" class="form-control" required >
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="form-group">
+                    <input asp-for="Images" type="file" multiple max="10" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="form-group">
+                    <div class="text-right">
+                        <button type="submit" class="btn btn-lg btn-block btn-primary">Speichern</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

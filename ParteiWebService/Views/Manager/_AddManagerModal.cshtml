@@ -1,0 +1,46 @@
+﻿@using Aufgabe_2.Models
+@model ApplicationUserMultiselectModel
+
+@{ 
+    List<DataAccessLibrary.Models.ApplicationUser> avaibleUsers = new List<DataAccessLibrary.Models.ApplicationUser>();
+    
+    try
+    {
+        avaibleUsers = Model.ApplicationUsers.Where(s => !s.UserRoles.Any(r => r.Role.Name.Equals("Manager"))).ToList();
+    }
+    catch(Exception)
+    {
+        //toDo
+    }
+
+
+    var i = 0;
+
+}
+
+<!-- MODAL SECTION -->
+<div class="modal fade" id="addManager" tabindex="-1" role="dialog" aria-labelledby="addMitgliederModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Manager hinzufügen</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form asp-action="AddManager" asp-controller="Manager">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group col">
+                            @Html.DropDownListFor(m => m.SelectedMemberIDs, new SelectList(avaibleUsers, "Id", "UserName"), new { @class = "selectpicker", multiple = "true" })
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
+                    <button type="submit" class="btn btn-primary">Speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

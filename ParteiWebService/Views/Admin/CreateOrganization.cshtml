@@ -1,0 +1,47 @@
+﻿@using DataAccessLibrary.Models
+@model Organization
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Verein anlegen</h1>
+    </div>
+
+    <form asp-action="CreateOrganization" asp-controller="Admin" method="post" enctype="multipart/form-data">
+        <div class="row ">
+            <div class="col-lg-8">
+                <div class="form-group">
+                    <label for="exampleFormControlInput1" asp-for="Name"></label>
+                    <input type="text" class="form-control" asp-for="Name" placeholder="@Html.DisplayNameFor(model => model.Name)" required>
+                </div>
+            </div>
+        </div>
+        <div class="row ">
+            <div class="col-lg-8">
+                <div class="form-group">
+                    <label asp-for="Admin.Email"></label>
+                    <input type="text" class="form-control" asp-for="Admin.Email" placeholder="Bitte Manager Email-Adresse eintragen" required>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="form-group">
+                    <input asp-for="OrganizationImage" type="file" multiple max="10" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="form-group">
+                    <div class="text-right">
+                        <button type="submit" class="btn btn-lg btn-block btn-primary">Speichern</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
