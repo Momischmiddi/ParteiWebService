@@ -14,6 +14,41 @@ namespace ParteiWebService.StorageManagers
     {
         public static BlobContainerClient imageBlobContainer;
         public static BlobContainerClient travelImageBlobContainer;
+        public static BlobContainerClient politicalImagBlobContainer;
+
+        public static async Task<Result> AddPoliticalImageAsync(string fileName, IFormFile file)
+        {
+            var result = new Result();
+
+            try
+            {
+                BlobClient blobClient = politicalImagBlobContainer.GetBlobClient(fileName);
+
+                var stream = file.OpenReadStream();
+
+                if (await blobClient.ExistsAsync())
+                {
+                    result.Successfull = true;
+                    result.Payload = blobClient.Uri.AbsoluteUri;
+                }
+                else
+                {
+                    var resp = await blobClient.UploadAsync(stream, true);
+                    stream.Close();
+
+                    result.Successfull = true;
+                    result.Payload = blobClient.Uri.AbsoluteUri;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                result.Successfull = false;
+                result.Payload = e.Message;
+            }
+
+            return result;
+        }
 
         public static async Task<Result> AddImageAsync(string fileName, IFormFile file)
         {
@@ -27,9 +62,6 @@ namespace ParteiWebService.StorageManagers
 
                 if(await blobClient.ExistsAsync())
                 {
-                    //result.Successfull = false;
-                    //result.Payload = "File named " + fileName + " already exists.";
-
                     result.Successfull = true;
                     result.Payload = blobClient.Uri.AbsoluteUri;
                 } 
@@ -153,6 +185,7 @@ namespace ParteiWebService.StorageManagers
                 BlobServiceClient blobServiceClient = new BlobServiceClient(Credentials.BlobServiceClientKey);
                 imageBlobContainer = blobServiceClient.GetBlobContainerClient("images");
                 travelImageBlobContainer = blobServiceClient.GetBlobContainerClient("travelimages");
+                politicalImagBlobContainer = blobServiceClient.GetBlobContainerClient("politicalimages");
             }
             catch(Exception e)
             {
