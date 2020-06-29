@@ -1,4 +1,4 @@
-﻿using Aufgabe_2.Models;
+﻿using ParteiWebService.Models;
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -8,7 +8,7 @@ using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Aufgabe_2.StorageManagers
+namespace ParteiWebService.StorageManagers
 {
     public class BlobManager
     {

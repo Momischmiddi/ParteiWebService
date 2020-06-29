@@ -10,12 +10,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLibrary.DataAccess
 {
-
-    public class BobContext : IdentityDbContext<ApplicationUser, ApplicationRole, string,
+    public class ParteiDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string,
         IdentityUserClaim<string>, ApplicationUserRole, IdentityUserLogin<string>,
         IdentityRoleClaim<string>, IdentityUserToken<string>>
     {
-        public BobContext(DbContextOptions<BobContext> options)
+        public ParteiDbContext(DbContextOptions<ParteiDbContext> options)
             : base(options)
         {
         }
@@ -25,12 +24,32 @@ namespace DataAccessLibrary.DataAccess
         public DbSet<Member> Members { get; set; }
         public DbSet<Travel> Travels { get; set; }
         public DbSet<TravelMember> TravelMembers { get; set; }
-        public DbSet<ExternalMember> ExternalMemebers { get; set; }
+        public DbSet<ExternalMember> ExternalMembers { get; set; }
+        public DbSet<ExternalTravelMember> ExternalTravelMembers { get; set; }
         public DbSet<Image> Images { get; set; }
+        public DbSet<Stop> Stops { get; set; }
+        public DbSet<TravelStop> TravelStops { get; set; }
+
+        public object Member { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<TravelStop>(travelStops =>
+            {
+                travelStops.HasKey(ts => new { ts.StopId, ts.TravelId });
+
+                travelStops.HasOne(ts => ts.Travel)
+                    .WithMany(s => s.TravelStops)
+                    .HasForeignKey(ts => ts.TravelId)
+                    .IsRequired();
+
+                travelStops.HasOne(ts => ts.Stop)
+                    .WithMany(t => t.TravelStops)
+                    .HasForeignKey(ts => ts.StopId)
+                    .IsRequired();
+            });
 
             builder.Entity<ApplicationUserRole>(userRole =>
             {

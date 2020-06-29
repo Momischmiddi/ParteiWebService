@@ -1,4 +1,4 @@
-﻿using DataAccessLibrary.Models.DataAccessLibrary.Models;
+﻿using DataAccessLibrary.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

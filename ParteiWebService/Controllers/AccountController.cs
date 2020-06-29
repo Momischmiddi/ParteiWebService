@@ -1,27 +1,27 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
-using Aufgabe_2.Models;
+using ParteiWebService.Models;
 using DataAccessLibrary.DataAccess;
 using DataAccessLibrary.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace Aufgabe_2.Controllers
+namespace ParteiWebService.Controllers
 {
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly BobContext _bobContext;
+        private readonly ParteiDbContext _parteiDbContext;
 
         public AccountController(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            BobContext bobContext)
+            ParteiDbContext parteiDbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _bobContext = bobContext;
+            _parteiDbContext = parteiDbContext;
         }
 
         public IActionResult Login()

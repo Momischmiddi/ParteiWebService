@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aufgabe_2.MicroServiceHelpers.PDFService
+namespace ParteiWebService.MicroServiceHelpers.PDFService
 {
     public class RequestHelper
     {

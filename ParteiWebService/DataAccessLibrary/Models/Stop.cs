@@ -5,14 +5,16 @@ using System.Text;
 
 namespace DataAccessLibrary.Models
 {
-    namespace DataAccessLibrary.Models
+
+    public class Stop
     {
-        public class Stop
-        {
-            [Key]
-            public int StopId { get; set; }
-            [Display(Name = "StopName")]
-            public string StopName { get; set; }          
-        }
+        [Key]
+        public int StopId { get; set; }
+        [Display(Name = "Zusteigepunkt")]
+        public string StopName { get; set; }
+
+        public ICollection<TravelStop> TravelStops { get; set; }
+
     }
+
 }

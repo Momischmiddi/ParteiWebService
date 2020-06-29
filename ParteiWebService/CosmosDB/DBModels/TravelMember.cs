@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using System;
 
-namespace Aufgabe_2.CosmosDBModels
+namespace ParteiWebService.CosmosDB.DBModels
 {
     public class TravelMember
     {

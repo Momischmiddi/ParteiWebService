@@ -4,7 +4,7 @@ using DataAccessLibrary.Models;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Aufgabe_2.MicroServiceHelpers.PDFService
+namespace ParteiWebService.MicroServiceHelpers.PDFService
 {
     public class ModelCreators
     {
@@ -19,7 +19,7 @@ namespace Aufgabe_2.MicroServiceHelpers.PDFService
                 imageUrl = travel.Images.FirstOrDefault().ImageUrl;
             }
 
-            foreach (ExternalMember externalMember in travel.ExternalMembers)
+           /* foreach (ExternalMember externalMember in travel.ExternalMembers)
             {
                 members.Add(
                     new TravelMemberPDFModel
@@ -31,7 +31,7 @@ namespace Aufgabe_2.MicroServiceHelpers.PDFService
                         Stop = externalMember.BoardingPoint,
                         TargetCosts = externalMember.TargetCosts
                     });
-            }
+            }*/
 
             foreach(TravelMember member in travel.TravelMembers)
             {

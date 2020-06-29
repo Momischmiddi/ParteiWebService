@@ -1,0 +1,16 @@
+﻿@using ParteiWebService.ViewModel
+@using DataAccessLibrary.Models
+@model TripAddUserViewModel
+@{
+    ViewData["Title"] = "_ExternalMemberDropdown";
+}
+    <form asp-action="AddExternalMemberToTrip" asp-controller="TripAddUser">
+        <div class="col mt-5">
+            <select asp-for="SelectedExternalMemeberIDs" asp-items="@(new SelectList(Model.ExternalMembers, "ID", "PreName"))" class="selectpicker" data-live-search="true"></select>
+            @Html.HiddenFor(travel => travel.Travel.TravelId)
+            @Html.HiddenFor(stop => stop.Stops[0].StopId)
+        </div>
+        <div class="col mt-5">
+            <button type="submit" class="btn btn-primary">Speichern</button>
+        </div>
+    </form>

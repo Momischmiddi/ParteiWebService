@@ -28,8 +28,10 @@ namespace DataAccessLibrary.Models
 
         public List<Image> Images { get; set; }
 
-        public List<ExternalMember> ExternalMembers { get; } = new List<ExternalMember>();
+        public List<ExternalTravelMember> ExternalTravelMembers { get; } = new List<ExternalTravelMember>();
 
         public List<TravelMember> TravelMembers { get; } = new List<TravelMember>();
+
+        public ICollection<TravelStop> TravelStops { get; set; }
     }
 }

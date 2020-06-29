@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Aufgabe_2
+namespace ParteiWebService
 {
     public class ErrorPageCreator
     {

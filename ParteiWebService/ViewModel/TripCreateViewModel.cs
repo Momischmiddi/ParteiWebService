@@ -1,0 +1,17 @@
+﻿using DataAccessLibrary.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace ParteiWebService.ViewModel
+{
+    public class TripCreateViewModel
+    {
+        public IEnumerable<int> tripStopId { get; set; }
+        public List<Stop> StopList { get; set; }
+        public Travel Travel { get; set; }
+        public Stop Stop { get; set; }
+
+    }
+}

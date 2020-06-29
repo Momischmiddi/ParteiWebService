@@ -1,0 +1,48 @@
+﻿@using ParteiWebService.ViewModel
+@using DataAccessLibrary.Models
+@model TripAddUserViewModel
+@{
+    ViewData["Title"] = "_ExternalTravelMemberTable";
+}
+
+@if (Model.ExternalTravelMembers.Count >= 0)
+{
+    <div class="table-responsive">
+        <table class="table table-bordered" id="dataTableExternalTravelMember" width="100%" cellspacing="0">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>@Html.DisplayNameFor(model => model.ExternalTravelMembers.First().ExternalMember.PreName)</th>
+                    <th>@Html.DisplayNameFor(model => model.ExternalTravelMembers.First().ExternalMember.LastName)</th>
+                    <th>Kosten</th>
+                    <th>@Html.DisplayNameFor(model => model.ExternalTravelMembers.First().Stop.StopName)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (ExternalTravelMember externalTravelMember in Model.ExternalTravelMembers)
+                {
+                    <tr id="@externalTravelMember.ExternalMember.ID">
+                        <td>
+                            <button onclick='DeleteExternalTravelMemberData("@externalTravelMember.ExternalMember.ID", "@Model.Travel.TravelId")' href="#" class="d-none d-sm-inline-block btn btn-danger btn-circle">
+                                <span class="icon">
+                                    <i class="fas fa-trash-alt"></i>
+                                </span>
+                            </button>
+                        </td>
+                        <td>@externalTravelMember.ExternalMember.PreName</td>
+                        <td>@externalTravelMember.ExternalMember.LastName</td>
+                        <td>@externalTravelMember.ActualCosts/@externalTravelMember.TargetCosts</td>
+                        <td>
+                            <select id="inputState" class="form-control form-control-sm">
+                                @foreach (Stop stop in Model.Stops)
+                                {
+                                    <option value="@stop.StopId">@stop.StopName</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

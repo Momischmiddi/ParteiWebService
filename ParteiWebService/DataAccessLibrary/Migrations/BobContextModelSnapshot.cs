@@ -3,12 +3,11 @@ using System;
 using DataAccessLibrary.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccessLibrary.Migrations
 {
-    [DbContext(typeof(BobContext))]
-    partial class BobContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ParteiDbContext))]
+    partial class ParteiDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -127,29 +126,9 @@ namespace DataAccessLibrary.Migrations
                     b.ToTable("AspNetUserRoles");
                 });
 
-            modelBuilder.Entity("DataAccessLibrary.Models.DataAccessLibrary.Models.Stop", b =>
-                {
-                    b.Property<int>("StopId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("StopName")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("StopId");
-
-                    b.ToTable("Stop");
-                });
-
             modelBuilder.Entity("DataAccessLibrary.Models.ExternalMember", b =>
                 {
                     b.Property<string>("ID")
-                        .HasColumnType("TEXT");
-
-                    b.Property<double>("ActualCosts")
-                        .HasColumnType("REAL");
-
-                    b.Property<string>("BoardingPoint")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("LastName")
@@ -161,6 +140,26 @@ namespace DataAccessLibrary.Migrations
                     b.Property<string>("PreName")
                         .HasColumnType("TEXT");
 
+                    b.HasKey("ID");
+
+                    b.ToTable("ExternalMembers");
+                });
+
+            modelBuilder.Entity("DataAccessLibrary.Models.ExternalTravelMember", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("ActualCosts")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("ExternalMemberID")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("StopId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<double>("TargetCosts")
                         .HasColumnType("REAL");
 
@@ -169,9 +168,13 @@ namespace DataAccessLibrary.Migrations
 
                     b.HasKey("ID");
 
+                    b.HasIndex("ExternalMemberID");
+
+                    b.HasIndex("StopId");
+
                     b.HasIndex("TravelId");
 
-                    b.ToTable("ExternalMemebers");
+                    b.ToTable("ExternalTravelMembers");
                 });
 
             modelBuilder.Entity("DataAccessLibrary.Models.Image", b =>
@@ -270,6 +273,20 @@ namespace DataAccessLibrary.Migrations
                     b.ToTable("Organizations");
                 });
 
+            modelBuilder.Entity("DataAccessLibrary.Models.Stop", b =>
+                {
+                    b.Property<int>("StopId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("StopName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("StopId");
+
+                    b.ToTable("Stops");
+                });
+
             modelBuilder.Entity("DataAccessLibrary.Models.Travel", b =>
                 {
                     b.Property<int>("TravelId")
@@ -304,8 +321,9 @@ namespace DataAccessLibrary.Migrations
 
             modelBuilder.Entity("DataAccessLibrary.Models.TravelMember", b =>
                 {
-                    b.Property<string>("ID")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
                     b.Property<double>("ActualCosts")
                         .HasColumnType("REAL");
@@ -331,6 +349,21 @@ namespace DataAccessLibrary.Migrations
                     b.HasIndex("TravelId");
 
                     b.ToTable("TravelMembers");
+                });
+
+            modelBuilder.Entity("DataAccessLibrary.Models.TravelStop", b =>
+                {
+                    b.Property<int>("StopId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TravelId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("StopId", "TravelId");
+
+                    b.HasIndex("TravelId");
+
+                    b.ToTable("TravelStops");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -435,10 +468,20 @@ namespace DataAccessLibrary.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DataAccessLibrary.Models.ExternalMember", b =>
+            modelBuilder.Entity("DataAccessLibrary.Models.ExternalTravelMember", b =>
                 {
-                    b.HasOne("DataAccessLibrary.Models.Travel", null)
-                        .WithMany("ExternalMembers")
+                    b.HasOne("DataAccessLibrary.Models.ExternalMember", "ExternalMember")
+                        .WithMany()
+                        .HasForeignKey("ExternalMemberID");
+
+                    b.HasOne("DataAccessLibrary.Models.Stop", "Stop")
+                        .WithMany()
+                        .HasForeignKey("StopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataAccessLibrary.Models.Travel", "Travel")
+                        .WithMany("ExternalTravelMembers")
                         .HasForeignKey("TravelId");
                 });
 
@@ -477,7 +520,7 @@ namespace DataAccessLibrary.Migrations
                         .WithMany()
                         .HasForeignKey("MemberID");
 
-                    b.HasOne("DataAccessLibrary.Models.DataAccessLibrary.Models.Stop", "Stop")
+                    b.HasOne("DataAccessLibrary.Models.Stop", "Stop")
                         .WithMany()
                         .HasForeignKey("StopId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -486,6 +529,21 @@ namespace DataAccessLibrary.Migrations
                     b.HasOne("DataAccessLibrary.Models.Travel", "Travel")
                         .WithMany("TravelMembers")
                         .HasForeignKey("TravelId");
+                });
+
+            modelBuilder.Entity("DataAccessLibrary.Models.TravelStop", b =>
+                {
+                    b.HasOne("DataAccessLibrary.Models.Stop", "Stop")
+                        .WithMany("TravelStops")
+                        .HasForeignKey("StopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataAccessLibrary.Models.Travel", "Travel")
+                        .WithMany("TravelStops")
+                        .HasForeignKey("TravelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

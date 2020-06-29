@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Aufgabe_2.Models;
+using ParteiWebService.Models;
 using Microsoft.AspNetCore.Hosting;
-using Aufgabe_2.StorageManagers;
+using ParteiWebService.StorageManagers;
 using DataAccessLibrary.Models;
 using DataAccessLibrary.DataAccess;
 using MongoDB.Driver;
@@ -14,48 +14,47 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
-namespace Aufgabe_2.Controllers
+namespace ParteiWebService.Controllers
 {
     public class ImageUploadController : Controller
     {
         private readonly ILogger<ImageUploadController> _logger;
         private readonly IHostingEnvironment _environment;
-        private readonly BobContext _bobContext;
+        private readonly ParteiDbContext _parteiDbContext;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
         public ImageUploadController(ILogger<ImageUploadController> logger, IHostingEnvironment environment,
-            BobContext bobContext,
+            ParteiDbContext parteiDbContext,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager)
         {
             _environment = environment;
             _logger = logger;
-            _bobContext = bobContext;
+            _parteiDbContext = parteiDbContext;
             _userManager = userManager;
             _signInManager = signInManager;
         }
 
-        /*
         [Authorize]
         [HttpGet]
         public IActionResult Index()
         {
-            var mongoCollection = CosmosManager.ImageDataCollection;
-            var findResult = CosmosManager.ImageDataCollection.Find(e => e.Id != null).ToList();
-            return View(findResult);
+            //var mongoCollection = CosmosManager.ImageDataCollection;
+            //var findResult = CosmosManager.ImageDataCollection.Find(e => e.Id != null).ToList();
+            return View();
         }
 
         private void AddOrganization()
         {
-            _bobContext.Organizations.Add(new Organization
+            _parteiDbContext.Organizations.Add(new Organization
             {
                 Name = "Piraten3"
             });
 
-            _bobContext.SaveChanges();
-            var orgas = _bobContext.Organizations.ToList();
-            var org = _bobContext.Organizations.Where<Organization>(o => o.Name == "Piraten").First<Organization>();
+            _parteiDbContext.SaveChanges();
+            var orgas = _parteiDbContext.Organizations.ToList();
+            var org = _parteiDbContext.Organizations.Where<Organization>(o => o.Name == "Piraten").First<Organization>();
 
             org.Members.Add(new Member
             {
@@ -64,16 +63,16 @@ namespace Aufgabe_2.Controllers
                 PreName = "Moritz"
             });
 
-            _bobContext.SaveChanges();
+            _parteiDbContext.SaveChanges();
 
-            org = _bobContext.Organizations.Where<Organization>(o => o.Name == "Piraten").First<Organization>();
+            org = _parteiDbContext.Organizations.Where<Organization>(o => o.Name == "Piraten").First<Organization>();
 
-            _bobContext.Organizations.Remove(org);
+            _parteiDbContext.Organizations.Remove(org);
 
-            _bobContext.SaveChanges();
+            _parteiDbContext.SaveChanges();
 
             // Muss null sein, da entfernt..
-            org = _bobContext.Organizations.Where<Organization>(o => o.Name == "Piraten").FirstOrDefault<Organization>();
+            org = _parteiDbContext.Organizations.Where<Organization>(o => o.Name == "Piraten").FirstOrDefault<Organization>();
         }
 
         [HttpPost]
@@ -90,24 +89,29 @@ namespace Aufgabe_2.Controllers
 
                         if (result.Successfull)
                         {
-                            CosmosManager.ImageDataCollection.InsertOne(new ImageDataModel
-                            {
-                                FileName = file.FileName,
-                                FileSize = int.Parse(file.Length.ToString()),
-                                FileType = file.ContentType,
-                                ImageUrl = (String) result.Payload,
-                                LastModified = DateTime.Now.ToString()
-                            }); ;
                         }
                     }
                 }
             }
+                        /*CosmosManager.ImageDataCollection.InsertOne(new ImageDataModel
+                        {
+                            FileName = file.FileName,
+                            FileSize = int.Parse(file.Length.ToString()),
+                            FileType = file.ContentType,
+                            ImageUrl = (String) result.Payload,
+                            LastModified = DateTime.Now.ToString()
+                        }); ;
+                    }
+                }
+            }
+            }
             var mongoCollection = CosmosManager.ImageDataCollection;
             var findResult = CosmosManager.ImageDataCollection.Find(e => e.Id != null).ToList();
-            return View(findResult);
+            return View(findResult);*/
+            return View();
         }
 
-        */
+
         public IActionResult Privacy()
         {
             return View();
@@ -117,6 +121,6 @@ namespace Aufgabe_2.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }     
+        }
     }
 }

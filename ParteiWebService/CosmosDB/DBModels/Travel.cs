@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 
-namespace Aufgabe_2.CosmosDBModels
+namespace ParteiWebService.CosmosDB.DBModels
 {
     public class Travel
     {

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DataAccessLibrary.Migrations
 {
-    public partial class Ini : Migration
+    public partial class cloudbobs : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -39,7 +39,9 @@ namespace DataAccessLibrary.Migrations
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false)
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    MemberId = table.Column<string>(nullable: true),
+                    OrgranizationId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -47,7 +49,21 @@ namespace DataAccessLibrary.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Stop",
+                name: "ExternalMembers",
+                columns: table => new
+                {
+                    ID = table.Column<string>(nullable: false),
+                    PreName = table.Column<string>(nullable: true),
+                    LastName = table.Column<string>(nullable: true),
+                    Mail = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExternalMembers", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Stops",
                 columns: table => new
                 {
                     StopId = table.Column<int>(nullable: false)
@@ -56,7 +72,7 @@ namespace DataAccessLibrary.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Stop", x => x.StopId);
+                    table.PrimaryKey("PK_Stops", x => x.StopId);
                 });
 
             migrationBuilder.CreateTable(
@@ -206,23 +222,34 @@ namespace DataAccessLibrary.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ExternalMemebers",
+                name: "ExternalTravelMembers",
                 columns: table => new
                 {
-                    ID = table.Column<string>(nullable: false),
-                    PreName = table.Column<string>(nullable: true),
-                    LastName = table.Column<string>(nullable: true),
-                    Mail = table.Column<string>(nullable: true),
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
                     TargetCosts = table.Column<double>(nullable: false),
                     ActualCosts = table.Column<double>(nullable: false),
-                    BoardingPoint = table.Column<string>(nullable: true),
-                    TravelId = table.Column<int>(nullable: true)
+                    TravelId = table.Column<int>(nullable: true),
+                    ExternalMemberID = table.Column<string>(nullable: true),
+                    StopId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ExternalMemebers", x => x.ID);
+                    table.PrimaryKey("PK_ExternalTravelMembers", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_ExternalMemebers_Travels_TravelId",
+                        name: "FK_ExternalTravelMembers_ExternalMembers_ExternalMemberID",
+                        column: x => x.ExternalMemberID,
+                        principalTable: "ExternalMembers",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ExternalTravelMembers_Stops_StopId",
+                        column: x => x.StopId,
+                        principalTable: "Stops",
+                        principalColumn: "StopId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ExternalTravelMembers_Travels_TravelId",
                         column: x => x.TravelId,
                         principalTable: "Travels",
                         principalColumn: "TravelId",
@@ -246,6 +273,30 @@ namespace DataAccessLibrary.Migrations
                     table.PrimaryKey("PK_Images", x => x.ImageId);
                     table.ForeignKey(
                         name: "FK_Images_Travels_TravelId",
+                        column: x => x.TravelId,
+                        principalTable: "Travels",
+                        principalColumn: "TravelId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TravelStops",
+                columns: table => new
+                {
+                    TravelId = table.Column<int>(nullable: false),
+                    StopId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TravelStops", x => new { x.StopId, x.TravelId });
+                    table.ForeignKey(
+                        name: "FK_TravelStops_Stops_StopId",
+                        column: x => x.StopId,
+                        principalTable: "Stops",
+                        principalColumn: "StopId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TravelStops_Travels_TravelId",
                         column: x => x.TravelId,
                         principalTable: "Travels",
                         principalColumn: "TravelId",
@@ -289,7 +340,8 @@ namespace DataAccessLibrary.Migrations
                 name: "TravelMembers",
                 columns: table => new
                 {
-                    ID = table.Column<string>(nullable: false),
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
                     TargetCosts = table.Column<double>(nullable: false),
                     ActualCosts = table.Column<double>(nullable: false),
                     TravelId = table.Column<int>(nullable: true),
@@ -306,9 +358,9 @@ namespace DataAccessLibrary.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_TravelMembers_Stop_StopId",
+                        name: "FK_TravelMembers_Stops_StopId",
                         column: x => x.StopId,
-                        principalTable: "Stop",
+                        principalTable: "Stops",
                         principalColumn: "StopId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -357,8 +409,18 @@ namespace DataAccessLibrary.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExternalMemebers_TravelId",
-                table: "ExternalMemebers",
+                name: "IX_ExternalTravelMembers_ExternalMemberID",
+                table: "ExternalTravelMembers",
+                column: "ExternalMemberID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExternalTravelMembers_StopId",
+                table: "ExternalTravelMembers",
+                column: "StopId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExternalTravelMembers_TravelId",
+                table: "ExternalTravelMembers",
                 column: "TravelId");
 
             migrationBuilder.CreateIndex(
@@ -369,7 +431,8 @@ namespace DataAccessLibrary.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Members_ApplicationUserId",
                 table: "Members",
-                column: "ApplicationUserId");
+                column: "ApplicationUserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Members_OrganizationId",
@@ -379,7 +442,8 @@ namespace DataAccessLibrary.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Organizations_AdminId",
                 table: "Organizations",
-                column: "AdminId");
+                column: "AdminId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_TravelMembers_MemberID",
@@ -394,6 +458,11 @@ namespace DataAccessLibrary.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_TravelMembers_TravelId",
                 table: "TravelMembers",
+                column: "TravelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TravelStops_TravelId",
+                table: "TravelStops",
                 column: "TravelId");
         }
 
@@ -415,7 +484,7 @@ namespace DataAccessLibrary.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "ExternalMemebers");
+                name: "ExternalTravelMembers");
 
             migrationBuilder.DropTable(
                 name: "Images");
@@ -424,13 +493,19 @@ namespace DataAccessLibrary.Migrations
                 name: "TravelMembers");
 
             migrationBuilder.DropTable(
+                name: "TravelStops");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "ExternalMembers");
 
             migrationBuilder.DropTable(
                 name: "Members");
 
             migrationBuilder.DropTable(
-                name: "Stop");
+                name: "Stops");
 
             migrationBuilder.DropTable(
                 name: "Travels");

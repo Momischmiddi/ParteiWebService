@@ -1,71 +1,26 @@
-﻿@using DataAccessLibrary.Models
-@model List<Travel>
+﻿@using ParteiWebService.ViewModel
+@model TripOverviewViewModel
 @{
     ViewData["Title"] = "Index";
 }
+
+
 <div class="container-fluid">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Bevorstehende Reisen</h1>
-    </div>
-    <div class="row flex-nowrap overflow-auto">
 
-        @foreach (var travel in Model)
-        {
-            <div class="col-12 col-sm-6 col-md-6 col-lg-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title" name="@travel.Destination">@travel.Destination</h5>
-                    </div>
-                    <div id="carouselControls_trip_@(travel.TravelId)" class="carousel slide" data-ride="carousel">
-                        <div class="carousel-inner">
-                            @foreach (var image in travel.Images)
-                            {
-                                <div class="carousel-item @(travel.Images.First() == image ? "active":"" )">
-                                    <img class="d-block w-100" src="@image.ImageUrl" alt="@travel.Destination" name="@image.ImageId">
-                                </div>
-                            }
-
-                        </div>
-                        <a class="carousel-control-prev" href="#carouselControls_trip_@(travel.TravelId)" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#carouselControls_trip_@(travel.TravelId)" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text" name="trip_description">@travel.Description</p>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">@(travel.EndDate.Subtract(travel.StartDate).TotalDays) Nächte</li>
-                        <li class="list-group-item">Kosten: @travel.Costs € p.P.</li>
-                    </ul>
-                    <div class="card-body">
-                        <a href="/TripAddUser/Index?TravelId=@travel.TravelId" class="card-link">Informationen</a>
-                        <a href="#" class="card-link">Teilnehmen</a>
-                    </div>
-                    <div class="card-footer text-muted text-right">
-                        Teilnehmer:
-                        @(travel.TravelMembers.Count() + travel.ExternalMembers.Count())
-                        /
-                        @travel.MaxTraveler
-                    </div>
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">Bevorstehende Reisen</h1>
                 </div>
-            </div>
-        }
+                <div class="row flex-nowrap overflow-auto">
+                    <partial name="_DisplayTrip"
+                             model="@Model.UpcomingTravels" />
+                </div>
+        
+            
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">Vergangene Reisen</h1>
+                </div>
+                <div class="row flex-nowrap overflow-auto">
+                    <partial name="_DisplayTrip"
+                             model="@Model.PastTravels" />
+                </div>
     </div>
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Vergangene Reisen</h1>
-    </div>
-</div>
-
-
-
-
-
-
-
-
-

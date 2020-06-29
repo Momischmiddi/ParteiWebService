@@ -7,12 +7,12 @@ using System.Net;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Aufgabe_2.CSV_Export;
-using Aufgabe_2.ExportManagers;
-using Aufgabe_2.MicroServiceHelpers.PDFService;
-using Aufgabe_2.Models;
-using Aufgabe_2.Utility;
-using Aufgabe_2.Views.Manager;
+using ParteiWebService.CSV_Export;
+using ParteiWebService.ExportManagers;
+using ParteiWebService.MicroServiceHelpers.PDFService;
+using ParteiWebService.Models;
+using ParteiWebService.Utility;
+using ParteiWebService.Views.Manager;
 using DataAccessLibrary.DataAccess;
 using DataAccessLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -25,19 +25,19 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 
-namespace Aufgabe_2.Controllers
+namespace ParteiWebService.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly BobContext _bobContext;
+        private readonly ParteiDbContext _parteiDbContext;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
 
-        public HomeController(BobContext bobContext, RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager, IEmailSender emailSender)
+        public HomeController(ParteiDbContext parteiDbContext, RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager, IEmailSender emailSender)
         {
             _emailSender = emailSender;
-            _bobContext = bobContext;
+            _parteiDbContext = parteiDbContext;
             _roleManager = roleManager;
             _userManager = userManager;
             createRolesandUsers();
@@ -47,40 +47,11 @@ namespace Aufgabe_2.Controllers
         [HttpGet]
         public async Task<IActionResult> IndexAsync()
         {
-            /*
-            PDFExportManager.CreateMemberPDF(new ModelMember
-            {
-                Users = new List<User>
-                {
-                    new User
-                    {
-                        PreName = "Moritz",
-                        LastName = "Schmidt",
-                        Address = "Domänenstraße 16",
-                        Age = 24,
-                        City = "Tettnang",
-                        Contribution = 12.01,
-                        Postal = "88069"
-                    },
-
-                    new User
-                    {
-                        PreName = "Moritz",
-                        LastName = "Schmidt",
-                        Address = "Domänenstraße 16",
-                        Age = 24,
-                        City = "Tettnang",
-                        Contribution = 12.13,
-                        Postal = "88069"
-                    }
-                }
-            });
-            */
             var user = await _userManager.GetUserAsync(User);
-            var organizsationUser = _bobContext.Organizations.Include(i => i.Admin).Where(u => u.Admin.Id.Equals(user.Id)).SingleOrDefault();
+            var organizsationUser = _parteiDbContext.Organizations.Include(i => i.Admin).Where(u => u.Admin.Id.Equals(user.Id)).SingleOrDefault();
             if(organizsationUser != null)
             {
-                var allMembers = _bobContext.Members.Where(a => a.Organization.Id.Equals(organizsationUser.Id)).ToList();
+                var allMembers = _parteiDbContext.Members.Where(a => a.Organization.Id.Equals(organizsationUser.Id)).ToList();
                 return View(allMembers);
             }
             else
@@ -95,15 +66,15 @@ namespace Aufgabe_2.Controllers
         {
             member.ID = Guid.NewGuid().ToString();
             var user = await _userManager.GetUserAsync(User);
-            var organizsationUser = _bobContext.Organizations.Where(u => u.Admin.Id.Equals(user.Id)).SingleOrDefault();
+            var organizsationUser = _parteiDbContext.Organizations.Where(u => u.Admin.Id.Equals(user.Id)).SingleOrDefault();
             member.OrganizationId = organizsationUser.Id;
             if (!member.IsActiveMember)
             {
                 member.ApplicationUser = null;
                 member.ApplicationUserId = null;
             }
-            _bobContext.Add(member);
-            _bobContext.SaveChanges();
+            _parteiDbContext.Add(member);
+            _parteiDbContext.SaveChanges();
 
             if(member.IsActiveMember)
             {
@@ -114,7 +85,7 @@ namespace Aufgabe_2.Controllers
                 }
                 member.ApplicationUser.UserName = member.ID;
                 member.ApplicationUser.PasswordHash = Guid.NewGuid().ToString();
-                _bobContext.SaveChanges();
+                _parteiDbContext.SaveChanges();
 
                 var userId = await _userManager.GetUserIdAsync(member.ApplicationUser);
                 var email = await _userManager.GetEmailAsync(member.ApplicationUser);
@@ -139,8 +110,8 @@ namespace Aufgabe_2.Controllers
         [HttpPost]
         public IActionResult UpdateMember(Member member)
         {
-            _bobContext.Update(member);
-            _bobContext.SaveChanges();
+            _parteiDbContext.Update(member);
+            _parteiDbContext.SaveChanges();
 
             return RedirectToAction("Index");
         }
@@ -148,7 +119,7 @@ namespace Aufgabe_2.Controllers
 
         public IActionResult EditMember(string MemberID)
         {
-            return PartialView("_UpdateMember", _bobContext.Members.Single(m => m.ID.Equals(MemberID)));
+            return PartialView("_UpdateMember", _parteiDbContext.Members.Single(m => m.ID.Equals(MemberID)));
         }
 
         [HttpDelete]
@@ -159,11 +130,11 @@ namespace Aufgabe_2.Controllers
         [HttpPost]
         public IActionResult Delete(string id)
         {
-            var member = _bobContext.Members.Include(i => i.ApplicationUser).Single(m => m.ID.Equals(id));
-            _bobContext.Members.Remove(member);
+            var member = _parteiDbContext.Members.Include(i => i.ApplicationUser).Single(m => m.ID.Equals(id));
+            _parteiDbContext.Members.Remove(member);
             try
             {
-                var deletedUser = _bobContext.Users.SingleOrDefault(m => m.Id.Equals(member.ApplicationUser.Id));
+                var deletedUser = _parteiDbContext.Users.SingleOrDefault(m => m.Id.Equals(member.ApplicationUser.Id));
                 _userManager.DeleteAsync(deletedUser);
             }
             catch (Exception)
@@ -171,13 +142,13 @@ namespace Aufgabe_2.Controllers
 
             }
 
-            _bobContext.SaveChanges();
+            _parteiDbContext.SaveChanges();
             return RedirectToAction("Index");
         }
         [HttpPost]
         public IActionResult CsvExport()
         {
-            var allMembers = _bobContext.Members.ToList();
+            var allMembers = _parteiDbContext.Members.ToList();
             CSVExportManager.CreateMemberCSV(CSVExportManager.MapMemberToModelMember(allMembers), "wwwroot/export/export.csv");
 
             var net = new System.Net.WebClient();
@@ -193,7 +164,7 @@ namespace Aufgabe_2.Controllers
         public async Task<IActionResult> PdfExport()
         {
             var memberListServiceURL = "https://seniorenbobspdfservice.azurewebsites.net/PDFCreate/CreateMemberListPDF";
-            var members = await _bobContext.Members.ToListAsync();
+            var members = await _parteiDbContext.Members.ToListAsync();
             var model = ModelCreators.CreateMemberListPDFModel(members);
 
             var postResult = await RequestHelper.SendPDFRequestAsync(memberListServiceURL, model);
@@ -238,13 +209,13 @@ namespace Aufgabe_2.Controllers
 
             foreach (var modelMember in CSVExportManager.ReadMemberCSV(path).Users)
             {
-                _bobContext.Add(CSVExportManager.MapModelMemberToMember(modelMember, Guid.NewGuid().ToString()));
+                _parteiDbContext.Add(CSVExportManager.MapModelMemberToMember(modelMember, Guid.NewGuid().ToString()));
             }
-            _bobContext.SaveChanges();
+            _parteiDbContext.SaveChanges();
 
             System.IO.File.Delete(path);
 
-            var allMembers = _bobContext.Members.ToList();
+            var allMembers = _parteiDbContext.Members.ToList();
             return RedirectToAction("Index");
         }
  

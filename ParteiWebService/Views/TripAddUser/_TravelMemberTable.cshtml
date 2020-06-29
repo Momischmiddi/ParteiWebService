@@ -1,0 +1,63 @@
+﻿@using ParteiWebService.ViewModel
+@using DataAccessLibrary.Models
+@model TripAddUserViewModel
+@{
+    ViewData["Title"] = "_TravelMemberTable";
+}
+
+@if (Model.TravelMembers.Count >= 0)
+{
+    <div class="table-responsive">
+        <table class="table table-bordered" id="dataTableTravelMember" width="100%" cellspacing="0">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>@Html.DisplayNameFor(model => model.TravelMembers.First().Member.PreName)</th>
+                    <th>@Html.DisplayNameFor(model => model.TravelMembers.First().Member.LastName)</th>
+                    <th>Kosten</th>
+                    <th>@Html.DisplayNameFor(model => model.TravelMembers.First().Stop.StopName)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (TravelMember travelMember in Model.TravelMembers)
+                {
+                    <tr id="@travelMember.Member.ID">
+                        <td></td>
+                        <td>@travelMember.Member.PreName</td>
+                        <td>@travelMember.Member.LastName</td>
+                        <td>
+                            <div class="form-check">
+                                @if (travelMember.ActualCosts == travelMember.TargetCosts)
+                                {
+                                    <input type="checkbox" checked class="form-check-input" id="checkbox_@travelMember.ID" onclick="updateTravelCost(@travelMember.ID)">
+                                }
+                                else
+                                {
+                                    <input type="checkbox" class="form-check-input" id="checkbox_@travelMember.ID" onclick="updateTravelCost(@travelMember.ID)">
+                                }
+
+                                <label class="form-check-label" for="exampleCheck1">Bezahlt</label>
+                            </div>
+                            </td>
+                        <td>
+                            <select id="inputState" onchange='updateStop("@travelMember.Member.ID",@Model.Travel.TravelId)' class="form-control form-control-sm">
+                              
+                                @foreach (Stop stop in Model.Stops)
+                                {
+                                    if (travelMember.StopId.Equals(stop.StopId) || travelMember.StopId.Equals(-1))
+                                    {
+                                        <option selected value="@stop.StopId">@stop.StopName</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@stop.StopId">@stop.StopName</option>
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

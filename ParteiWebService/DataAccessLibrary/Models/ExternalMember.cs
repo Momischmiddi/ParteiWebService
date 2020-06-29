@@ -15,12 +15,6 @@ namespace DataAccessLibrary.Models
         [Display(Name = "Nachname")]
         public string LastName { get; set; }
         [Display(Name = "E-Mail Adresse")]
-        public string Mail { get; set; }
-        [Display(Name = "Soll Kosten")]
-        public double TargetCosts { get; set; }
-        [Display(Name = "Ist Kosten")]
-        public double ActualCosts { get; set; }
-        [Display(Name = "Zustiegspunkt")]
-        public string BoardingPoint { get; set; }
+        public string Mail { get; set; }  
     }
 }

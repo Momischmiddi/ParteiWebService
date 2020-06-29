@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Security.Authentication;
-using Aufgabe_2.CosmosDBModels;
 using MongoDB.Driver;
+using ParteiWebService.CosmosDB.DBModels;
 
-namespace Aufgabe_2
+namespace ParteiWebService
 {
     public class CosmosManager
     {

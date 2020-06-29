@@ -13,19 +13,25 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="~/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
     <link href="~/css/sb-admin-2.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="~/css/site.css" />
     <link href="~/lib/fontawesome-free/css/all.css" rel="stylesheet" />
     <link href="~/css/bootstrap-select.min.css" rel="stylesheet" />
-    <link href="~/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
-    <style>
-        .vereins_logo {
-            margin-top:30px;
-            vertical-align: middle;
-            width: 60px;
-            height: 60px;
-        }
-        
-    </style>
+
+    <!--Externe Scripts und CSS Files -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/javascript" href="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js" />
+    <script type="text/javascript" src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+
+    <!--Eigene Scripts und CSS Files -->
+    <script type="text/javascript" src="~/js/tripAddUser.js"></script>
+    <script type="text/javascript" src="~/js/tripOverview.js"></script>
+    <link rel="stylesheet" href="~/css/site.css" />
+
 </head>
 <body>
     <div id="wrapper">
@@ -75,7 +81,7 @@
             <!-- Divider -->
             <hr class="sidebar-divider">
 
-            @if (User.IsInRole("Manager"))
+            @if (User.IsInRole("Admin"))
             {
                 <!-- Heading -->
                 <div class="sidebar-heading">
@@ -83,9 +89,9 @@
                 </div>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="/Manager/Index">
+                    <a class="nav-link" href="/Admin/Index">
                         <i class="fas fa-fw fa-wrench"></i>
-                        <span>Manager</span>
+                        <span>Admin</span>
                     </a>
                 </li>
             }

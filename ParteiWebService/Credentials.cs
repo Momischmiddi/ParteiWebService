@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security;
 using System.Threading.Tasks;
 
-namespace Aufgabe_2
+namespace ParteiWebService
 {
     public class Credentials
     {

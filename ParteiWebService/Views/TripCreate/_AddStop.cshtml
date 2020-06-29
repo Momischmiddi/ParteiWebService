@@ -1,0 +1,38 @@
+﻿@using DataAccessLibrary.Models
+@model Stop
+@{
+    ViewData["Title"] = "_AddStop";
+}
+<div class="modal fade" id="addStopModal" tabindex="-1" role="dialog" aria-labelledby="addStopModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Externes Mitglied hinzufügen</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="AddStop" onsubmit="StopList()">
+                    <div class="modal-body">
+                        <div class="row">
+                            @Html.HiddenFor(externalMember => externalMember.StopId)
+                            <div class="form-group col">
+                                <label asp-for="@Model.StopName"></label>
+                                <input class="form-control" placeholder="@Html.DisplayNameFor(x=>x.StopName)" asp-for="@Model.StopName" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
+                        <button class="btn btn-primary">Speichern</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
