@@ -7,34 +7,28 @@ namespace ParteiWebService
 {
     public class CosmosManager
     {
-        public static IMongoCollection<Image> images;
-        public static IMongoCollection<Stop> stops;
-        public static IMongoCollection<TravelMember> travelMembers;
-        public static IMongoCollection<Travel> travels;
+        public static IMongoCollection<Image> Images;
 
         public static void Setup()
         {
             try {
                 MongoClientSettings settings = new MongoClientSettings();
-                settings.Server = new MongoServerAddress("cloudbobmongo.mongo.cosmos.azure.com", 10255);
+                settings.Server = new MongoServerAddress("parteimongostorage.mongo.cosmos.azure.com", 10255);
                 settings.UseSsl = true;
                 settings.SslSettings = new SslSettings();
                 settings.SslSettings.EnabledSslProtocols = SslProtocols.Tls12;
                 settings.RetryWrites = false;
 
-                MongoIdentity identity = new MongoInternalIdentity("cloudbobdb", "cloudbobmongo");
+                MongoIdentity identity = new MongoInternalIdentity("parteidb", "parteimongostorage");
                 MongoIdentityEvidence evidence = new PasswordEvidence(Credentials.CosmosPasswordEvidence);
 
                 settings.Credential = new MongoCredential("SCRAM-SHA-1", identity, evidence);
 
                 MongoClient client = new MongoClient(settings);
 
-                var mongoDataBase = client.GetDatabase("cloudbobdb");
+                var mongoDataBase = client.GetDatabase("parteidb");
 
-                images = mongoDataBase.GetCollection<Image>("images");
-                stops = mongoDataBase.GetCollection<Stop>("stops");
-                travelMembers = mongoDataBase.GetCollection<TravelMember>("travelmembers");
-                travels = mongoDataBase.GetCollection<Travel>("travels");
+                Images = mongoDataBase.GetCollection<Image>("Images");
             } 
             catch(Exception e)
             {

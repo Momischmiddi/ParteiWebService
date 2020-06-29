@@ -8,10 +8,10 @@ namespace ParteiWebService.CosmosDB.DBModels
         [BsonElement("ImageId")]
         public Guid ImageId { get; set; } // Shard Key
 
-        [BsonElement("imagename")]
+        [BsonElement("ImageName")]
         public string ImageName { get; set; }
 
-        [BsonElement("bloburl")]
+        [BsonElement("BlobUrl")]
         public string BlobUrl { get; set; }
 
         public Image()

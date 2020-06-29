@@ -1,6 +1,7 @@
 using ParteiWebService.StorageManagers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using ParteiWebService.CosmosDB.DBModels;
 
 namespace ParteiWebService
 {
@@ -9,7 +10,7 @@ namespace ParteiWebService
         public static void Main(string[] args)
         {
             BlobManager.Setup();
-            //CosmosManager.Setup();
+            CosmosManager.Setup();
             CreateHostBuilder(args).Build().Run();
         }
 
