@@ -21,13 +21,12 @@
         }
         <div class="col col-4">
             <div class="card">
-                <img class="card-img-top" src="..." alt="Card image cap">
+                <img class="card-img-top" src="@((item.OrganizationImage != null) ? item.OrganizationImage : "/demoImages/23509.jpg")" />
                 <div class="card-body">
-                    <h5 class="card-title">Card title</h5>
-                    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                    <h5 class="card-title">@item.Name</h5>
                 </div>
                 <div class="card-footer">
-                    <small class="text-muted">Last updated 3 mins ago</small>
+                    <small class="text-muted">@item.Admin.Email</small>
                 </div>
             </div>
         </div>

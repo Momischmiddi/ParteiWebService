@@ -1,4 +1,4 @@
-﻿using ParteiWebService.ViewModel;
+﻿using Aufgabe_2.ViewModel;
 using DataAccessLibrary.DataAccess;
 using DataAccessLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -8,15 +8,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ParteiWebService.Controllers
+namespace Aufgabe_2.Controllers
 {
     public class TripAddUserController : Controller
     {
-        private readonly ParteiDbContext _parteiDbContext;
+        private readonly BobContext _bobContext;
 
-        public TripAddUserController(ParteiDbContext bobcontext)
+        public TripAddUserController(BobContext bobcontext)
         {
-            _parteiDbContext = bobcontext;
+            _bobContext = bobcontext;
         }
         public IActionResult Index(int TravelId)
         {
@@ -29,35 +29,36 @@ namespace ParteiWebService.Controllers
                 ActualCosts = 0,
             };
 
-            List<Stop> stops = _parteiDbContext.Stops.Include(x => x.TravelStops).Where(s => s.TravelStops.Select(x => x.TravelId.Equals(TravelId)).First()).ToList();
-            stops.Add(_parteiDbContext.Stops.SingleOrDefault(x => x.StopId.Equals(-1)));
-            List<Member> allMembers = _parteiDbContext.Members.ToList();
-            List<ExternalMember> allExternalMembers = _parteiDbContext.ExternalMembers.ToList();
-            List<TravelMember> allTravelMembers = _parteiDbContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(TravelId)).ToList();
-            List<ExternalTravelMember> allExternalTravelMembers = _parteiDbContext.ExternalTravelMembers.ToList();
+            List<Stop> stops = _bobContext.Stops.Include(x => x.TravelStops).Where(s => s.TravelStops.Select(x => x.TravelId.Equals(TravelId)).First()).ToList();
+            //stops.Add(_bobContext.Stops.SingleOrDefault(x => x.StopId.Equals(-1)));
 
-            List<string> allMemberstr = _parteiDbContext.Members.Select(x => x.ID).ToList();
-            List<string> allTravelMembersStr = _parteiDbContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(TravelId)).Select(x => x.Member.ID).ToList();
+            List<Member> allMembers = _bobContext.Members.ToList();
+            List<ExternalMember> allExternalMembers = _bobContext.ExternalMembers.ToList();
+            List<TravelMember> allTravelMembers = _bobContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(TravelId)).ToList();           
+            List<ExternalTravelMember> externalTravelMembers = _bobContext.ExternalTravelMembers.Where(x => x.Travel.TravelId.Equals(TravelId)).ToList();
+
+            List<string> allMemberstr = _bobContext.Members.Select(x => x.ID).ToList();
+            List<string> allTravelMembersStr = _bobContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(TravelId)).Select(x => x.Member.ID).ToList();
             List<string> s = allMemberstr.Except(allTravelMembersStr).ToList();
             List<Member> mem = new List<Member>();
             foreach (string id in s)
             {
-                mem.Add(_parteiDbContext.Members.Single(x => x.ID.Equals(id)));
+                mem.Add(_bobContext.Members.Single(x => x.ID.Equals(id)));
             }
-            var travel = _parteiDbContext.Travels.Single(x => x.TravelId == TravelId);
+            var travel = _bobContext.Travels.Single(x => x.TravelId == TravelId);
 
-            List<string> allExternalMemberstr = _parteiDbContext.ExternalMembers.Select(x => x.ID).ToList();
-            List<string> allExternalTravelMembersStr = _parteiDbContext.ExternalTravelMembers.Where(x => x.Travel.TravelId.Equals(TravelId)).Select(x => x.ExternalMember.ID).ToList();
+            List<string> allExternalMemberstr = _bobContext.ExternalMembers.Select(x => x.ID).ToList();
+            List<string> allExternalTravelMembersStr = _bobContext.ExternalTravelMembers.Where(x => x.Travel.TravelId.Equals(TravelId)).Select(x => x.ExternalMember.ID).ToList();
             List<string> es = allExternalMemberstr.Except(allExternalTravelMembersStr).ToList();
             List<ExternalMember> exmem = new List<ExternalMember>();
             foreach (string id in es)
             {
-                exmem.Add(_parteiDbContext.ExternalMembers.Single(x => x.ID.Equals(id)));
+                exmem.Add(_bobContext.ExternalMembers.Single(x => x.ID.Equals(id)));
             }
 
-            var testStops = _parteiDbContext.Stops.ToList();
+           // var testStops = _bobContext.Stops.ToList();
 
-            var tupleModel = new Tuple<List<Member>, List<ExternalMember>, List<TravelMember>, Travel, List<Stop>, List<ExternalTravelMember>>(mem, allExternalMembers, allTravelMembers, travel, testStops, allExternalTravelMembers);
+            //var tupleModel = new Tuple<List<Member>, List<ExternalMember>, List<TravelMember>, Travel, List<Stop>, List<ExternalTravelMember>>(mem, allExternalMembers, allTravelMembers, travel, testStops, allExternalTravelMembers);
           
             var tripAddUserViewModel = new TripAddUserViewModel
             {
@@ -66,8 +67,8 @@ namespace ParteiWebService.Controllers
                 SelectedExternalMemeberIDs = new List<String>(),
                 TravelMembers = allTravelMembers,
                 Travel = travel,
-                Stops = testStops,
-                ExternalTravelMembers = allExternalTravelMembers
+                Stops = stops,
+                ExternalTravelMembers = externalTravelMembers
             };
 
             return View(tripAddUserViewModel);
@@ -78,8 +79,8 @@ namespace ParteiWebService.Controllers
         public IActionResult AddExternalMember(ExternalMember externalMember, Travel travel)
         {
             externalMember.ID = Guid.NewGuid().ToString();
-            _parteiDbContext.Add(externalMember);
-            _parteiDbContext.SaveChanges();
+            _bobContext.Add(externalMember);
+            _bobContext.SaveChanges();
 
             int travelIdreturn = travel.TravelId;
 
@@ -92,8 +93,8 @@ namespace ParteiWebService.Controllers
             TravelMember travelMember = new TravelMember();
 
             travelMember.Member = member;
-            _parteiDbContext.Add(travelMember);
-            _parteiDbContext.SaveChanges();
+            _bobContext.Add(travelMember);
+            _bobContext.SaveChanges();
 
 
             return RedirectToAction("Index");
@@ -106,8 +107,8 @@ namespace ParteiWebService.Controllers
              * Das Funkt so noch nicht
              * */
             //var travelMember = 
-            _parteiDbContext.Remove(travelMember.ID);
-            _parteiDbContext.SaveChanges();
+            _bobContext.Remove(travelMember.ID);
+            _bobContext.SaveChanges();
             return RedirectToAction("Index");
         }
 
@@ -115,80 +116,113 @@ namespace ParteiWebService.Controllers
         public IActionResult GetTravelMemberData(string MemberID, int travelId)
         {
             //var travelId = Convert.ToInt32(TravelId);
-            var Member = _parteiDbContext.Members.Single(member => member.ID.Equals(MemberID));
+            var Member = _bobContext.Members.Single(member => member.ID.Equals(MemberID));
 
-            if (_parteiDbContext.TravelMembers.Count(x => x.Member.Equals(Member)) > 1)
+            if (_bobContext.TravelMembers.Count(x => x.Member.Equals(Member)) > 1)
             {
                 throw new Exception("Travelmember existiert bereits");
             }
+                      
+            var travel = _bobContext.Travels.Single(travel => travel.TravelId.Equals(travelId));
 
             var TravelMember = new TravelMember
             {
                 ActualCosts = 0,
-                Member = _parteiDbContext.Members.Single(member => member.ID.Equals(MemberID)),
-                Stop = _parteiDbContext.Stops.Single(stop => stop.StopId.Equals(-1)),
-                TargetCosts = _parteiDbContext.Travels.Single(x => x.TravelId.Equals(travelId)).Costs,
-                Travel = _parteiDbContext.Travels.Single(travel => travel.TravelId.Equals(travelId)),
-
+                Member = Member,                
+                Travel = travel
             };
 
-            var t = _parteiDbContext.TravelMembers.Add(TravelMember);
-            _parteiDbContext.SaveChanges();
+            Console.WriteLine(TravelMember);
+            var t = _bobContext.TravelMembers.Add(TravelMember);
+            _bobContext.SaveChanges();
 
 
-            List<string> allMemberstr = _parteiDbContext.Members.Select(x => x.ID).ToList();
-            List<string> allTravelMembersStr = _parteiDbContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).Select(x => x.Member.ID).ToList();
+            List<string> allMemberstr = _bobContext.Members.Select(x => x.ID).ToList();
+            List<string> allTravelMembersStr = _bobContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).Select(x => x.Member.ID).ToList();
             List<string> s = allMemberstr.Except(allTravelMembersStr).ToList();
             List<Member> mem = new List<Member>();
             foreach (string id in s)
             {
-                mem.Add(_parteiDbContext.Members.Single(x => x.ID.Equals(id)));
+                mem.Add(_bobContext.Members.Single(x => x.ID.Equals(id)));
             }
-            List<Stop> stops = _parteiDbContext.Stops.Include(x => x.TravelStops).Where(s => s.TravelStops.Select(x => x.TravelId.Equals(travelId)).First()).ToList();
-            stops.Add(_parteiDbContext.Stops.SingleOrDefault(x => x.StopId.Equals(-1)));
-            var member = _parteiDbContext.TravelMembers.Include(x => x.Member).Where(x => x.Travel.TravelId.Equals(travelId)).ToList();
+            List<Stop> stops = _bobContext.Stops.ToList();
+            var member = _bobContext.TravelMembers.Include(x => x.Member).Where(x => x.Travel.TravelId.Equals(travelId)).ToList();
+            List<ExternalTravelMember> externalTravelMembers = _bobContext.ExternalTravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).ToList();
             var tripAddUserViewModel = new TripAddUserViewModel
             {
                 Members = mem,
                 ExternalMembers = null,
                 SelectedExternalMemeberIDs = null,
                 TravelMembers = member,
-                Travel = _parteiDbContext.Travels.Single(x => x.TravelId.Equals(travelId)),
+                Travel = _bobContext.Travels.Single(x => x.TravelId.Equals(travelId)),
                 Stops = stops,
-                ExternalTravelMembers = null
+                ExternalTravelMembers = externalTravelMembers
             };
 
-            // ViewModel anstatt Tuple
-            //return PartialView("_TravelMemberTable", new Tuple<List<TravelMember>, List<Stop>>(member,_parteiDbContext.Stops.ToList()));
             return PartialView("_TravelMemberTable", tripAddUserViewModel);
         }
 
         public IActionResult DeleteTravelMemberData(string MemberID, int travelId)
         {
-            var tm = _parteiDbContext.TravelMembers.Single(x => x.Member.ID.Equals(MemberID) && x.Travel.TravelId.Equals(travelId));
+            var tm = _bobContext.TravelMembers.Single(x => x.Member.ID.Equals(MemberID) && x.Travel.TravelId.Equals(travelId));
 
-            var t = _parteiDbContext.TravelMembers.Remove(tm);
-            _parteiDbContext.SaveChanges();
+            var t = _bobContext.TravelMembers.Remove(tm);
+            _bobContext.SaveChanges();
 
-            List<string> allMemberstr = _parteiDbContext.Members.Select(x => x.ID).ToList();
-            List<string> allTravelMembersStr = _parteiDbContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).Select(x => x.Member.ID).ToList();
+            List<string> allMemberstr = _bobContext.Members.Select(x => x.ID).ToList();
+            List<string> allTravelMembersStr = _bobContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).Select(x => x.Member.ID).ToList();
             List<string> s = allMemberstr.Except(allTravelMembersStr).ToList();
             List<Member> mem = new List<Member>();
             foreach (string id in s)
             {
-                mem.Add(_parteiDbContext.Members.Single(x => x.ID.Equals(id)));
+                mem.Add(_bobContext.Members.Single(x => x.ID.Equals(id)));
+            }
+
+            var member = _bobContext.TravelMembers.Include(x => x.Member).Where(x => x.Travel.TravelId.Equals(travelId)).ToList();
+            List<Stop> stops = _bobContext.Stops.ToList();
+            //stops.Add(_bobContext.Stops.SingleOrDefault(x => x.StopId.Equals(-1)));
+
+            List<ExternalTravelMember> externalTravelMembers = _bobContext.ExternalTravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).ToList();
+            List<ExternalMember> externalMembers = _bobContext.ExternalMembers.ToList();
+
+            var tripAddUserViewModel = new TripAddUserViewModel
+            {
+                Members = mem,
+                ExternalMembers = externalMembers,
+                SelectedExternalMemeberIDs = null,
+                TravelMembers = member,
+                Travel = _bobContext.Travels.Single(x => x.TravelId.Equals(travelId)),
+                Stops = stops,
+                ExternalTravelMembers = externalTravelMembers
+            };
+            
+            // so wird nur die TravelMemberTable aktualisiert... die MemberTable bleibt aber unverändert und wird halt beim neuladen dann wieder richtig initialisiert!
+            return PartialView("_TravelMemberTable", tripAddUserViewModel);
+            // return RedirectToAction("Index", new { TravelId = travelId });
+        }
+
+        [HttpGet]
+        public IActionResult GetMemberData(int travelId)
+        {
+            List<string> allMemberstr = _bobContext.Members.Select(x => x.ID).ToList();
+            List<string> allTravelMembersStr = _bobContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).Select(x => x.Member.ID).ToList();
+            List<string> s = allMemberstr.Except(allTravelMembersStr).ToList();
+            List<Member> mem = new List<Member>();
+            foreach (string id in s)
+            {
+                mem.Add(_bobContext.Members.Single(x => x.ID.Equals(id)));
             }
 
             return PartialView("_MemberTable", mem);
         }
 
         [HttpGet]
-        public IActionResult GetExternalTravelMemberData(string ExternalMemberID, string TravelId, int StopId)
+        public IActionResult GetExternalTravelMemberData(string ExternalMemberID, string TravelId)
         {
             var travelId = Convert.ToInt32(TravelId);
-            var externalMember = _parteiDbContext.ExternalMembers.Single(externalMember => externalMember.ID.Equals(ExternalMemberID));
+            var externalMember = _bobContext.ExternalMembers.Single(externalMember => externalMember.ID.Equals(ExternalMemberID));
 
-            if (_parteiDbContext.ExternalTravelMembers.Count(x => x.ExternalMember.Equals(externalMember)) > 1)
+            if (_bobContext.ExternalTravelMembers.Count(x => x.ExternalMember.Equals(externalMember)) > 1)
             {
                 throw new Exception("ExternalTravelMember existiert bereits");
             }
@@ -196,75 +230,112 @@ namespace ParteiWebService.Controllers
             var externalTravelMember = new ExternalTravelMember
             {
                 ActualCosts = 0,
-                ExternalMember = _parteiDbContext.ExternalMembers.Single(externalMember => externalMember.ID.Equals(ExternalMemberID)),
-                Stop = _parteiDbContext.Stops.Single(stop => stop.StopId.Equals(StopId)),
-                TargetCosts = _parteiDbContext.Travels.Single(x => x.TravelId.Equals(travelId)).Costs,
-                Travel = _parteiDbContext.Travels.Single(travel => travel.TravelId.Equals(travelId)),
+                ExternalMember = _bobContext.ExternalMembers.Single(externalMember => externalMember.ID.Equals(ExternalMemberID)),                
+                Travel = _bobContext.Travels.Single(travel => travel.TravelId.Equals(travelId)),
 
             };
 
-            var t = _parteiDbContext.ExternalTravelMembers.Add(externalTravelMember);
-            _parteiDbContext.SaveChanges();
-            var externalMemberOne = _parteiDbContext.ExternalTravelMembers.Include(x => x.ExternalMember).ToList();
+            var t = _bobContext.ExternalTravelMembers.Add(externalTravelMember);
+            _bobContext.SaveChanges();
+            var externalMemberOne = _bobContext.ExternalTravelMembers.Include(x => x.ExternalMember).ToList();
+
+            List<Stop> stops = _bobContext.Stops.ToList();
+            //stops.Add(_bobContext.Stops.SingleOrDefault(x => x.StopId.Equals(-1)));
+            List<Member> members = _bobContext.Members.ToList();
+            List<ExternalMember> externalMembers = _bobContext.ExternalMembers.ToList();
+            List<TravelMember> travelMembers = _bobContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).ToList();
+            List<ExternalTravelMember> externalTravelMembers = _bobContext.ExternalTravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).ToList();
 
             var tripAddUserViewModel = new TripAddUserViewModel
             {
-                Members = _parteiDbContext.Members.ToList(),
-                ExternalMembers = _parteiDbContext.ExternalMembers.ToList(),
-                SelectedExternalMemeberIDs = new List<String>(),
-                TravelMembers = _parteiDbContext.TravelMembers.ToList(),
-                Travel = _parteiDbContext.Travels.Single(x => x.TravelId == travelId),
-                Stops = _parteiDbContext.Stops.ToList(),
-                ExternalTravelMembers = externalMemberOne
+                Members = members,
+                ExternalMembers = externalMembers,
+                SelectedExternalMemeberIDs = null,
+                TravelMembers = travelMembers,
+                Travel = _bobContext.Travels.Single(x => x.TravelId == travelId),
+                Stops = stops,
+                ExternalTravelMembers = externalTravelMembers
             };
 
-            return PartialView("_ExternalTravelMemberTable", tripAddUserViewModel);
+
+            return PartialView("_TravelMemberTable", tripAddUserViewModel);
         }
 
         public IActionResult DeleteExternalTravelMemberData(string ExternalMemberID, string TravelId)
         {
             
             var travelId = Convert.ToInt32(TravelId);
-            var tm = _parteiDbContext.ExternalTravelMembers.Single(x => x.ExternalMember.ID.Equals(ExternalMemberID) && x.Travel.TravelId.Equals(travelId));
-            var t = _parteiDbContext.ExternalTravelMembers.Remove(tm);
-            _parteiDbContext.SaveChanges();
+            var tm = _bobContext.ExternalTravelMembers.Single(x => x.ExternalMember.ID.Equals(ExternalMemberID) && x.Travel.TravelId.Equals(travelId));
+            var t = _bobContext.ExternalTravelMembers.Remove(tm);
+            _bobContext.SaveChanges();
 
-            List<string> allExternalMemberstr = _parteiDbContext.ExternalMembers.Select(x => x.ID).ToList();
-            List<string> allExternalTravelMembersStr = _parteiDbContext.ExternalTravelMembers.Where(x => x.Travel.TravelId.Equals(TravelId)).Select(x => x.ExternalMember.ID).ToList();
+            List<ExternalMember> externalMembers = _bobContext.ExternalMembers.ToList();
+            List<Stop> stops = _bobContext.Stops.ToList();
+            //stops.Add(_bobContext.Stops.SingleOrDefault(x => x.StopId.Equals(-1)));
+            List<TravelMember> travelMembers = _bobContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).ToList();
+            List<ExternalTravelMember> externalTravelMembers = _bobContext.ExternalTravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).ToList();
+            List<Member> members = _bobContext.Members.ToList();
+
+            var tripAddUserViewModel = new TripAddUserViewModel
+            {
+                Members = members,
+                ExternalMembers = externalMembers,
+                SelectedExternalMemeberIDs = null,
+                TravelMembers = travelMembers,
+                Travel = _bobContext.Travels.Single(x => x.TravelId == travelId),
+                Stops = stops,
+                ExternalTravelMembers = externalTravelMembers
+            };
+
+            return PartialView("_TravelMemberTable", tripAddUserViewModel);          
+        }
+
+        [HttpGet]
+        public IActionResult GetExternalMemberData(int travelId)
+        {
+
+           // List<ExternalMember> externalMembers = _bobContext.ExternalMembers.ToList();
+            List<Stop> stops = _bobContext.Stops.ToList();
+            //stops.Add(_bobContext.Stops.SingleOrDefault(x => x.StopId.Equals(-1)));
+            List<TravelMember> travelMembers = _bobContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).ToList();
+            List<ExternalTravelMember> externalTravelMembers = _bobContext.ExternalTravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).ToList();
+            List<Member> members = _bobContext.Members.ToList();
+
+            List<string> allExternalMemberstr = _bobContext.ExternalMembers.Select(x => x.ID).ToList();
+            List<string> allExternalTravelMembersStr = _bobContext.ExternalTravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).Select(x => x.ExternalMember.ID).ToList();
             List<string> es = allExternalMemberstr.Except(allExternalTravelMembersStr).ToList();
             List<ExternalMember> exmem = new List<ExternalMember>();
             foreach (string id in es)
             {
-                exmem.Add(_parteiDbContext.ExternalMembers.Single(x => x.ID.Equals(id)));
+                exmem.Add(_bobContext.ExternalMembers.Single(x => x.ID.Equals(id)));
             }
-            List<Stop> stops = _parteiDbContext.Stops.Include(x => x.TravelStops).Where(s => s.TravelStops.Select(x => x.TravelId.Equals(travelId)).First()).ToList();
 
             var tripAddUserViewModel = new TripAddUserViewModel
             {
-                Members = _parteiDbContext.Members.ToList(),
+                Members = members,
                 ExternalMembers = exmem,
-                SelectedExternalMemeberIDs = new List<String>(),
-                TravelMembers = _parteiDbContext.TravelMembers.ToList(),
-                Travel = _parteiDbContext.Travels.Single(x => x.TravelId == travelId),
+                SelectedExternalMemeberIDs = null,
+                TravelMembers = travelMembers,
+                Travel = _bobContext.Travels.Single(x => x.TravelId == travelId),
                 Stops = stops,
-                ExternalTravelMembers = _parteiDbContext.ExternalTravelMembers.ToList()
+                ExternalTravelMembers = externalTravelMembers
             };
 
-            return PartialView("_ExternalTravelMemberTable", tripAddUserViewModel);          
+            return PartialView("_ExternalMemberDropdown", tripAddUserViewModel);
         }
 
         public IActionResult AddExternalMemberToTrip (TripAddUserViewModel tripAddUserViewModel)
-        {
+        {            
             int travelId = tripAddUserViewModel.Travel.TravelId;
             int stopId = tripAddUserViewModel.Stops[0].StopId;
             
 
             foreach (var userId in tripAddUserViewModel.SelectedExternalMemeberIDs)
             {
-                var externalMember = _parteiDbContext.ExternalMembers.Single(externalMember => externalMember.ID.Equals(userId));
+                var externalMember = _bobContext.ExternalMembers.Single(externalMember => externalMember.ID.Equals(userId));
                 Console.WriteLine(externalMember);
 
-                if (_parteiDbContext.ExternalTravelMembers.Count(x => x.ExternalMember.Equals(externalMember)) > 1)
+                if (_bobContext.ExternalTravelMembers.Count(x => x.ExternalMember.Equals(externalMember)) > 1)
                 {
                     throw new Exception("ExternalTravelMember existiert bereits");
                 }
@@ -273,66 +344,68 @@ namespace ParteiWebService.Controllers
                 var externalTravelMember = new ExternalTravelMember
                 {
                     ActualCosts = 0,
-                    ExternalMember = _parteiDbContext.ExternalMembers.Single(externalMember => externalMember.ID.Equals(userId)),
-                    Stop = _parteiDbContext.Stops.Single(stop => stop.StopId.Equals(stopId)),
-                    TargetCosts = _parteiDbContext.Travels.Single(x => x.TravelId.Equals(travelId)).Costs,
-                    Travel = _parteiDbContext.Travels.Single(travel => travel.TravelId.Equals(travelId)),
-
+                    ExternalMember = _bobContext.ExternalMembers.Single(externalMember => externalMember.ID.Equals(userId)),
+                    Travel = _bobContext.Travels.Single(travel => travel.TravelId.Equals(travelId)),
                 };
 
-                var t = _parteiDbContext.ExternalTravelMembers.Add(externalTravelMember);
-                _parteiDbContext.SaveChanges();
+                var t = _bobContext.ExternalTravelMembers.Add(externalTravelMember);
+                _bobContext.SaveChanges();
 
             }
-            var externalMemberOne = _parteiDbContext.ExternalTravelMembers.Include(x => x.ExternalMember).ToList();
+            var externalMemberOne = _bobContext.ExternalTravelMembers.Include(x => x.ExternalMember).ToList();
 
-            List<string> allExternalMemberstr = _parteiDbContext.ExternalMembers.Select(x => x.ID).ToList();
-            List<string> allExternalTravelMembersStr = _parteiDbContext.ExternalTravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).Select(x => x.ExternalMember.ID).ToList();
+            List<string> allExternalMemberstr = _bobContext.ExternalMembers.Select(x => x.ID).ToList();
+            List<string> allExternalTravelMembersStr = _bobContext.ExternalTravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).Select(x => x.ExternalMember.ID).ToList();
             List<string> es = allExternalMemberstr.Except(allExternalTravelMembersStr).ToList();
             List<ExternalMember> exmem = new List<ExternalMember>();
             foreach (string id in es)
             {
-                exmem.Add(_parteiDbContext.ExternalMembers.Single(x => x.ID.Equals(id)));
+                exmem.Add(_bobContext.ExternalMembers.Single(x => x.ID.Equals(id)));
             }
-            List<Stop> stops = _parteiDbContext.Stops.Include(x => x.TravelStops).Where(s => s.TravelStops.Select(x => x.TravelId.Equals(travelId)).First()).ToList();
+            List<Stop> stops = _bobContext.Stops.Include(x => x.TravelStops).Where(s => s.TravelStops.Select(x => x.TravelId.Equals(travelId)).First()).ToList();
 
             var tripAddUserViewModelOut = new TripAddUserViewModel
             {
-                Members = _parteiDbContext.Members.ToList(),
+                Members = _bobContext.Members.ToList(),
                 ExternalMembers = exmem,
                 SelectedExternalMemeberIDs = new List<String>(),
-                TravelMembers = _parteiDbContext.TravelMembers.ToList(),
-                Travel = _parteiDbContext.Travels.Single(x => x.TravelId == travelId),
+                TravelMembers = _bobContext.TravelMembers.ToList(),
+                Travel = _bobContext.Travels.Single(x => x.TravelId == travelId),
                 Stops = stops,
                 ExternalTravelMembers = externalMemberOne
             };
 
-            return RedirectToAction("Index", new { TravelId = travelId });
-            // bei der PartialView hängt der sich iwie auf und erstellt die dann als einzelene View
-            //return PartialView("_ExternalTravelMemberTable", tripAddUserViewModelOut);            
+            return RedirectToAction("Index", new { TravelId = travelId });          
         }
 
 
         public IActionResult UpdateStop(string MemberID, int travelId, int stopId)
         {
 
-            TravelMember x = _parteiDbContext.TravelMembers.SingleOrDefault(x => x.Travel.TravelId.Equals(travelId) && x.Member.ID.Equals(MemberID));
+            TravelMember x = _bobContext.TravelMembers.SingleOrDefault(x => x.Travel.TravelId.Equals(travelId) && x.Member.ID.Equals(MemberID));
 
             x.StopId = stopId;
 
-            _parteiDbContext.Update(x);
-            _parteiDbContext.SaveChanges();
+            _bobContext.Update(x);
+            _bobContext.SaveChanges();
 
+            //TODO Die Liste sauber befüllen...
+
+            List<Member> members = _bobContext.Members.ToList();
+            List<ExternalMember> externalMembers = _bobContext.ExternalMembers.ToList();
+            List<TravelMember> travelMembers = _bobContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).ToList();
+            List<ExternalTravelMember> externalTravelMembers = _bobContext.ExternalTravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).ToList();
+            List<Stop> stops = _bobContext.Stops.Include(x => x.TravelStops).Where(s => s.TravelStops.Select(x => x.TravelId.Equals(travelId)).First()).ToList();
 
             var tripAddUserViewModel = new TripAddUserViewModel
             {
-                Members = _parteiDbContext.Members.ToList(),
-                ExternalMembers = _parteiDbContext.ExternalMembers.ToList(),
-                SelectedExternalMemeberIDs = new List<String>(),
-                TravelMembers = _parteiDbContext.TravelMembers.ToList(),
-                Travel = _parteiDbContext.Travels.Single(x => x.TravelId == travelId),
-                Stops = _parteiDbContext.Stops.ToList(),
-                ExternalTravelMembers = _parteiDbContext.ExternalTravelMembers.Include(x => x.ExternalMember).ToList(),
+                Members = members,
+                ExternalMembers = externalMembers,
+                SelectedExternalMemeberIDs = null,
+                TravelMembers = travelMembers,
+                Travel = _bobContext.Travels.Single(x => x.TravelId == travelId),
+                Stops = stops,
+                ExternalTravelMembers = externalTravelMembers,
             };
 
             return PartialView("_TravelMemberTable", tripAddUserViewModel);
@@ -341,35 +414,43 @@ namespace ParteiWebService.Controllers
         public IActionResult UpdateStopExternal(string ExternalMemberId, int travelId, int stopId)
         {
 
-            ExternalTravelMember x = _parteiDbContext.ExternalTravelMembers.SingleOrDefault(x => x.Travel.TravelId.Equals(travelId) && x.ExternalMember.ID.Equals(ExternalMemberId));
+            ExternalTravelMember x = _bobContext.ExternalTravelMembers.SingleOrDefault(x => x.Travel.TravelId.Equals(travelId) && x.ExternalMember.ID.Equals(ExternalMemberId));
 
             x.StopId = stopId;
 
-            _parteiDbContext.Update(x);
-            _parteiDbContext.SaveChanges();
+            _bobContext.Update(x);
+            _bobContext.SaveChanges();
 
+
+            //TODO Die Liste suaber befüllen...
+            // Funktion im Frontend dann noch callen!
+            List<Member> members = _bobContext.Members.ToList();
+            List<ExternalMember> externalMembers = _bobContext.ExternalMembers.ToList();
+            List<TravelMember> travelMembers = _bobContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).ToList();
+            List<ExternalTravelMember> externalTravelMembers = _bobContext.ExternalTravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).ToList();
+            List<Stop> stops = _bobContext.Stops.Include(x => x.TravelStops).Where(s => s.TravelStops.Select(x => x.TravelId.Equals(travelId)).First()).ToList();
 
             var tripAddUserViewModel = new TripAddUserViewModel
             {
-                Members = _parteiDbContext.Members.ToList(),
-                ExternalMembers = _parteiDbContext.ExternalMembers.ToList(),
-                SelectedExternalMemeberIDs = new List<String>(),
-                TravelMembers = _parteiDbContext.TravelMembers.ToList(),
-                Travel = _parteiDbContext.Travels.Single(x => x.TravelId == travelId),
-                Stops = _parteiDbContext.Stops.ToList(),
-                ExternalTravelMembers = _parteiDbContext.ExternalTravelMembers.Include(x => x.ExternalMember).ToList(),
+                Members = members,
+                ExternalMembers = externalMembers,
+                SelectedExternalMemeberIDs = null,
+                TravelMembers = travelMembers,
+                Travel = _bobContext.Travels.Single(x => x.TravelId == travelId),
+                Stops = stops,
+                ExternalTravelMembers = externalTravelMembers,
             };
 
-            return PartialView("_ExternalTravelMemberTable", tripAddUserViewModel);
+            return PartialView("_TravelMemberTable", tripAddUserViewModel);
         }
 
         [HttpGet]
         public IActionResult UpdateTravelerCard(int travelId)
         {
 
-            var travel = _parteiDbContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).Count();
-            var externTraveler = _parteiDbContext.ExternalMembers.Count();
-            var maxTravel = _parteiDbContext.Travels.FirstOrDefault().MaxTraveler;
+            var travel = _bobContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).Count();
+            var externTraveler = _bobContext.ExternalMembers.Count();
+            var maxTravel = _bobContext.Travels.FirstOrDefault().MaxTraveler;
 
             Tuple<int, int> tupel = new Tuple<int, int>(travel, maxTravel);
 
@@ -380,9 +461,9 @@ namespace ParteiWebService.Controllers
         public IActionResult UpdateTravelCostCard(int travelId)
         {
 
-            var actualCosts = _parteiDbContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).Sum(x=>x.ActualCosts);
-            var targetCosts = _parteiDbContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).Select(x=>x.TargetCosts).FirstOrDefault();
-            var maxTravel = _parteiDbContext.Travels.FirstOrDefault().MaxTraveler;
+            var actualCosts = _bobContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).Sum(x=>x.ActualCosts);
+            var targetCosts = _bobContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).Select(x=>x.TargetCosts).FirstOrDefault();
+            var maxTravel = _bobContext.Travels.FirstOrDefault().MaxTraveler;
             
             Tuple<double, double> tupel = new Tuple<double, double>(actualCosts, (maxTravel* targetCosts));
 
@@ -393,7 +474,7 @@ namespace ParteiWebService.Controllers
         public IActionResult UpdateTravelCost(int travelMemberId,string paid)
         {
 
-            TravelMember x = _parteiDbContext.TravelMembers.SingleOrDefault(x=>x.ID.Equals(travelMemberId));
+            TravelMember x = _bobContext.TravelMembers.SingleOrDefault(x=>x.ID.Equals(travelMemberId));
             if (paid.Equals("true"))
             {
                 x.ActualCosts = x.TargetCosts;
@@ -403,19 +484,19 @@ namespace ParteiWebService.Controllers
                 x.ActualCosts = 0;
             }
 
-            _parteiDbContext.Update(x);
-            _parteiDbContext.SaveChanges();
+            _bobContext.Update(x);
+            _bobContext.SaveChanges();
 
 
             var tripAddUserViewModel = new TripAddUserViewModel
             {
-                Members = _parteiDbContext.Members.ToList(),
-                ExternalMembers = _parteiDbContext.ExternalMembers.ToList(),
+                Members = _bobContext.Members.ToList(),
+                ExternalMembers = _bobContext.ExternalMembers.ToList(),
                 SelectedExternalMemeberIDs = new List<String>(),
-                TravelMembers = _parteiDbContext.TravelMembers.ToList(),
-                Travel = _parteiDbContext.Travels.Single(x => x.TravelId == 1),
-                Stops = _parteiDbContext.Stops.ToList(),
-                ExternalTravelMembers = _parteiDbContext.ExternalTravelMembers.Include(x => x.ExternalMember).ToList(),
+                TravelMembers = _bobContext.TravelMembers.ToList(),
+                Travel = _bobContext.Travels.Single(x => x.TravelId == 1),
+                Stops = _bobContext.Stops.ToList(),
+                ExternalTravelMembers = _bobContext.ExternalTravelMembers.Include(x => x.ExternalMember).ToList(),
             };
 
             return PartialView("_TravelMemberTable", tripAddUserViewModel);

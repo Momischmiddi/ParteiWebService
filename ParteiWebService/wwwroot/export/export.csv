@@ -1,3 +1,2 @@
-PreName,LastName,Postal,City,Address,Age,Contribution
-Bob,Bobchen,12345,Bobhausen,Bostrasse,44,123
-Julian,Dietsche,79674,Todtnau,Kresselstr.,02/16/1994 00:00:00,200
+PreName,LastName,Postal,City,Address,DateOfBirth,Contribution
+Peter,Heiny,79261,Gutach,Elzstraße 28/1,03/30/1960 00:00:00,23

@@ -172,10 +172,20 @@ function deleteTravelMemberData(memberID, travelId) {
         url: '/TripAddUser/DeleteTravelMemberData?MemberID=' + memberID + '&TravelId=' + travelId,
         contentType: 'json',
         success: function (result) {
-            //console.log(result);
-            $('#memberTable').html(result);
-            setEventListenerFroDragAndDrop("#dataTableMember");
+            console.log("Erster Call haut hin");
+            $('#travelMemberTable').html(result);
+            setEventListenerFroDragAndDrop("#dataTableTravelMember");
             updateTravelerCard(travelId);
+            $.ajax({
+                url: '/TripAddUser/GetMemberData?TravelId=' + travelId,
+                type: "GET",
+                contentType: 'json',
+                success: function (resultTwo) {
+                    console.log("Zweiter Call haut hin");
+                    $('#memberTable').html(resultTwo);
+                    setEventListenerFroDragAndDrop('#dataTableMember');
+                }
+            })
         }
     });
 }

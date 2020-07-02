@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ParteiWebService.ViewModel
+namespace Aufgabe_2.ViewModel
 {
     public class AddExternalMemberViewModel
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ParteiWebService.Utility
+namespace Aufgabe_2.Utility
 {
     public class DateOfBirth
     {

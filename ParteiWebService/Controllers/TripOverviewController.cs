@@ -2,60 +2,76 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ParteiWebService.ViewModel;
+using Aufgabe_2.ViewModel;
 using DataAccessLibrary.DataAccess;
 using DataAccessLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
-namespace ParteiWebService.Controllers
+namespace Aufgabe_2.Controllers
 {
     public class TripOverviewController : Controller
     {
 
-        private readonly ParteiDbContext _parteiDbContext;
+        private readonly BobContext _bobContext;
+        private readonly UserManager<ApplicationUser> _userManager;
 
 
-        public TripOverviewController(ParteiDbContext parteiDbContext)
+        public TripOverviewController(UserManager<ApplicationUser> userManager, BobContext bobContext)
         {
-            _parteiDbContext = parteiDbContext;
+            _userManager = userManager;
+            _bobContext = bobContext;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            List<Travel> past = _parteiDbContext.Travels.Include(x => x.Images).Where(x=>x.StartDate < DateTime.Today).OrderBy(x => x.StartDate).ToList();
-            List<Travel>  upcoming = _parteiDbContext.Travels.Include(x => x.Images).Where(x => x.StartDate >= DateTime.Today).OrderBy(x => x.StartDate).ToList();
-
-            List<Travel> travelList = _parteiDbContext.Travels.ToList();
-            var maxTravel = _parteiDbContext.Travels.FirstOrDefault().MaxTraveler;
-            Dictionary<int, double> id_percent = new Dictionary<int, double>();
-            double percent = 0;
-            foreach (Travel travel in travelList)
-            {
-                var actualCosts = _parteiDbContext.TravelMembers.Where(x=>x.Travel.TravelId.Equals(travel.TravelId)).Sum(x=>x.ActualCosts);
-                var targetCosts = _parteiDbContext.TravelMembers.Where(x => x.Travel.TravelId.Equals(travel.TravelId)).Select(x => x.TargetCosts).FirstOrDefault();
-                if (targetCosts > 0)
-                {
-                    percent = (100.0 / (targetCosts * maxTravel)) * actualCosts;
-                }
-                id_percent.Add(travel.TravelId, percent);
-                percent = 0;
-            }
+            var user = await _userManager.GetUserAsync(User);
+            
+            List<Travel> past = _bobContext.Travels.Include(x => x.Images).Include(x => x.TravelMembers).ThenInclude(m =>m.Member).ThenInclude(a=> a.ApplicationUser).Where(x=>x.StartDate < DateTime.Today && x.OrganizationId == user.OrgranizationId).OrderBy(x => x.StartDate).ToList();
+            List<Travel>  upcoming = _bobContext.Travels.Include(x => x.Images).Include(x => x.TravelMembers).ThenInclude(m => m.Member).ThenInclude(a => a.ApplicationUser).Where(x => x.StartDate >= DateTime.Today && x.OrganizationId == user.OrgranizationId).OrderBy(x => x.StartDate).ToList();
             
             TripOverviewViewModel tripOverviewViewModel = new TripOverviewViewModel()
             {
-                PastTravels = new Tuple<List<Travel>, Dictionary<int, double>>(past,id_percent),
-                UpcomingTravels = new Tuple<List<Travel>, Dictionary<int, double>>(upcoming, id_percent),
+                PastTravels = past,
+                UpcomingTravels = upcoming
                 
             };
-
-
             return View(tripOverviewViewModel);
+        }
+
+        [HttpGet]
+        public IActionResult AddTravelMember(int TravelId)
+        {
+            var travel = _bobContext.Travels.Single(m => m.TravelId == TravelId);
+            var user = _userManager.GetUserAsync(User).Result;
+            user = _bobContext.ApplicationUsers.Include(m => m.Member).Single(a => a.Id.Equals(user.Id));
+            var member = _bobContext.Members.Single(m => m.ID.Equals(user.Member.ID));
+
+            travel.TravelMembers.Add(new TravelMember() { Travel = travel, Member = member});
+            _bobContext.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult DeleteTravelMember(int TravelId)
+        {
+          
+            var travel = _bobContext.Travels.Single(m => m.TravelId == TravelId);
+            var user = _userManager.GetUserAsync(User).Result;
+            user = _bobContext.ApplicationUsers.Include(m => m.Member).Single(a => a.Id.Equals(user.Id));
+            var member = _bobContext.Members.Single(m => m.ID.Equals(user.Member.ID));
+
+            var travelMember = _bobContext.TravelMembers.Single(m => m.Member.ID == member.ID && m.Travel.TravelId == travel.TravelId);
+            _bobContext.Remove(travelMember);
+
+            _bobContext.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         public IActionResult DeleteTravel(int travelId)
         {
 
-            var travel = _parteiDbContext.Travels.Where(x => x.TravelId == travelId).ToList();
+            var travel = _bobContext.Travels.Where(x => x.TravelId == travelId).ToList();
 
             if(travel.Count > 1)
             {
@@ -65,7 +81,7 @@ namespace ParteiWebService.Controllers
             {
                 throw new Exception("Fehler beim löschen! Keine Elemente gefunden.");
             }
-            _parteiDbContext.Travels.Remove(travel[0]);
+            _bobContext.Travels.Remove(travel[0]);
 
             return RedirectToAction("Index", "TripOverview");
         }
@@ -73,7 +89,7 @@ namespace ParteiWebService.Controllers
         public IActionResult UpdateCostProgrssbar(int travelId)
         {
 
-            var travel = _parteiDbContext.Travels.Where(x => x.TravelId == travelId).ToList();
+            var travel = _bobContext.Travels.Where(x => x.TravelId == travelId).ToList();
 
 
             return PartialView("_CostProgressbar", travel);

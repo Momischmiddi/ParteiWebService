@@ -76,3 +76,8 @@ html {
     width: 80px;
     height: 80px;
 }
+
+.nopadding {
+    padding: 0 !important;
+    margin: 0 !important;
+}

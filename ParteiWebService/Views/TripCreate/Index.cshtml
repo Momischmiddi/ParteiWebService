@@ -1,125 +1,109 @@
-﻿@using ParteiWebService.ViewModel
+﻿@using Aufgabe_2.ViewModel
 @model TripCreateViewModel
 @{
     ViewData["Title"] = "Index";
 }
-<div class="container-fluid">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Reise anlegen</h1>
-    </div>
+<div class="card shadow-sm p-3 px-5 pt-4">
+    <div class="container-fluid">
+        <div class="mb-4 text-center col-12">
+            <h1 class="h3 mb-0 text-gray-800">Reise anlegen <i class="fa fa-suitcase" aria-hidden="true"></i></h1>
+        </div>
 
-    <form asp-action="AddTravel" asp-controller="TripCreate" method="post" enctype="multipart/form-data">
-        <div class="row ">
-            <div class="col-lg-8">
-                <div class="form-group">
-                    <label for="exampleFormControlInput1" asp-for="@Model.Travel.Destination"></label>
-                    <input type="text" class="form-control" asp-for="@Model.Travel.Destination" placeholder="@Html.DisplayNameFor(model => model.Travel.Destination)" required>
+        <form asp-action="AddTravel" asp-controller="TripCreate" method="post" enctype="multipart/form-data">
+            @Html.HiddenFor(m => m.Travel.OrganizationId)
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1" asp-for="@Model.Travel.Destination"></label>
+                        <input type="text" class="form-control" asp-for="@Model.Travel.Destination" placeholder="@Html.DisplayNameFor(model => model.Travel.Destination)" required>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row ">
-            <div class="col-lg-8">
-                <div class="form-group">
-                    <label for="exampleFormControlTextarea1" asp-for="@Model.Travel.Description"></label>
-                    <textarea class="form-control" asp-for="@Model.Travel.Description" rows="3" placeholder="@Html.DisplayNameFor(model => model.Travel.Description)" required></textarea>
+            <div class="row ">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1" asp-for="@Model.Travel.Description"></label>
+                        <textarea class="form-control" asp-for="@Model.Travel.Description" rows="3" placeholder="@Html.DisplayNameFor(model => model.Travel.Description)" required></textarea>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row ">
-            <div class="col-lg-4">
-                <div class="form-group">
-                    <label for="exampleFormControlInput1" asp-for="@Model.Travel.StartDate"></label>
-                    <input type="date" class="form-control" asp-for="@Model.Travel.StartDate" placeholder="@Html.DisplayNameFor(model => model.Travel.StartDate)" required>
+            <div class="row ">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1" asp-for="@Model.Travel.StartDate"></label>
+                        @Html.TextBoxFor(model => model.Travel.StartDate, "{0:yyyy-MM-dd}", new { type = "date", @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1" asp-for="@Model.Travel.EndDate"></label>
+                        @Html.TextBoxFor(model => model.Travel.EndDate, "{0:yyyy-MM-dd}", new { type = "date", @class = "form-control" })
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-4">
-                <div class="form-group">
-                    <label for="exampleFormControlInput1" asp-for="@Model.Travel.EndDate"></label>
-                    <input type="date" class="form-control" asp-for="@Model.Travel.EndDate" placeholder="@Html.DisplayNameFor(model => model.Travel.EndDate)" required>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1" asp-for="@Model.Travel.Departure"></label>
+                        <input type="text" class="form-control" asp-for="@Model.Travel.Departure" placeholder="@Html.DisplayNameFor(model => model.Travel.Departure)" required>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="form-group">
-                    <label for="exampleFormControlInput1" asp-for="@Model.Travel.Departure"></label>
-                    <input type="text" class="form-control" asp-for="@Model.Travel.Departure" placeholder="@Html.DisplayNameFor(model => model.Travel.Departure)" required>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="form-group">
-                    <label for="exampleFormControlInput1" asp-for="@Model.Travel.Costs"></label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">€</span>
-                        </div>
-                        <input type="number" min="0.00" step="0.50" value="1.00" asp-for="@Model.Travel.Costs" class="form-control" required>
-                        <div class="input-group-append">
-                            <span class="input-group-text">pro Person</span>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1" asp-for="@Model.Travel.MaxTraveler"></label>
+                        <div class="input-group">
+                            <input type="number" step="1" value="@Model.Travel.MaxTraveler" asp-for="@Model.Travel.MaxTraveler" class="form-control" required>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="form-group">
-                    <label for="exampleFormControlInput1" asp-for="@Model.Travel.MaxTraveler"></label>
-                    <div class="input-group">
-                        <input type="number" step="1" value="1" asp-for="@Model.Travel.MaxTraveler" class="form-control" required>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row ">
-            <div class="col-lg-12">
-                <label for="exampleFormControlInput1">@Html.DisplayNameFor(x => x.Stop.StopName)</label>
-                <div class="row">
-                    <div class="col-lg-4">
-                        <div id="selectStopList">
-                            <partial name="_SelectStopList" model="@Model">
+            <div class="row ">
+                <div class="col-lg-12">
+                    <label for="exampleFormControlInput1">@Html.DisplayNameFor(x => x.Stop.StopName)</label>
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div id="selectStopList">
+                                <partial name="_SelectStopList" model="@Model">
+                            </div>
                         </div>
-                    </div>
                         <div class="col-lg-4">
                             <div class="form-group">
-                                <a href="#" id="header_modal" name="addStopModal" class="d-none d-sm-inline-block btn btn-primary btn-icon-split" data-toggle="modal" data-target="#addStopModal">
-                                    <span class="icon text-white-50">
-                                        <i class="fas fa-user-plus"></i>
-                                    </span>
+                                <a href="#" id="header_modal" name="addStopModal" class="d-none d-sm-inline-block btn btn-primary btn-block btn-icon-split" data-toggle="modal" data-target="#addStopModal">
                                     <span class="text">@Html.DisplayNameFor(m => m.Stop.StopName) hinzufügen</span>
                                 </a>
                             </div>
                         </div>
                     </div>
                 </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="form-group">
-                    <input class="custom-file-input" asp-for="@Model.Travel.Images" type="file" multiple max="6" accept="image/*"/>
-                    <label class="custom-file-label" for="customFile">Bilder auswählen</label>
-                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="form-group">
-                    <div class="text-right">
-                        <button type="submit" class="btn btn-lg btn-block btn-primary">Speichern</button>
+            <div class="row">
+                <div class="col-lg-12" style="margin-right:0.75rem; margin-left:0.75rem;">
+                    <div class="form-group">
+                        <input name="customFile" id="customFile" class="custom-file-input" asp-for="@Model.Travel.Images" type="file" multiple max="6" accept="image/*" />
+                        <label class="custom-file-label" style="margin-right:1.5rem;" for="customFile">Bilder auswählen</label>
                     </div>
                 </div>
             </div>
-        </div>
-    </form>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <div class="text-right">
+                            <button type="submit" class="btn btn-lg btn-block btn-primary">Speichern</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 <partial name="_AddStop" model="new DataAccessLibrary.Models.Stop()" />
 
 
 @section Scripts {
     <script type="text/javascript">
-       
+
         $('.custom-file-input').change(function (e) {
             var files = [];
             for (var i = 0; i < $(this)[0].files.length; i++) {
@@ -137,7 +121,7 @@
                 success: function (result) {
                     $('#selectStopList').html(result);
                     $('#addStopModal').modal('hide');
-                    $('#tripStopId').selectpicker();
+                    $('.selectpicker').selectpicker();
                     document.getElementById("StopName").value = "";
                 }
             });

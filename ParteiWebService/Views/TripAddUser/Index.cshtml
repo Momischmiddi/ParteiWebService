@@ -1,4 +1,4 @@
-﻿@using ParteiWebService.ViewModel
+﻿@using Aufgabe_2.ViewModel
 @using DataAccessLibrary.Models
 @model TripAddUserViewModel
 @{
@@ -32,28 +32,6 @@
                 </div>
             </div>
         </div>
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-4 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Gesamtskosten </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <div id="travelCostCard">
-                                    <partial name="_TravelCostCard"
-                                             model="new Tuple<double,double>(Model.TravelMembers.Where(x=>x.Travel.TravelId.Equals(Model.Travel.TravelId)).Sum(x=>x.ActualCosts),(Model.Travel.Costs*Model.Travel.MaxTraveler))">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Earnings (Monthly) Card Example -->
         <div class="col-xl-4 col-md-6 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
@@ -96,10 +74,10 @@
                             <partial name="_TravelMemberTable"
                                      model="Model">
                         </div>
-                        <div id="externalTravelMemberTable">
-                            <partial name="_ExternalTravelMemberTable"
-                                     model="Model">
-                        </div>
+                        @*<div id="externalTravelMemberTable">
+                                <partial name="_ExternalTravelMemberTable"
+                                         model="Model">
+                            </div>*@
                     </div>
                     <div class="card-footer">
 
@@ -153,7 +131,10 @@
                                 </a>
                             </div>
                             <div class="row">
-                                <partial name="_ExternalMemberDropdown" model="Model" />
+                                <div id="externalMemberDropDown">
+                                    <partial name="_ExternalMemberDropdown" 
+                                             model="Model" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -167,6 +148,7 @@
         @section Scripts {
             <script type="text/javascript">
                 function GetExternalTravelMemberData(externalMemberId, travelId, stopId) {
+                    // das kann denk weg
                     console.log(externalMemberId);
                     return $.ajax({
                         type: "GET",
@@ -174,23 +156,45 @@
                         contentType: 'application/json',
                         success: function (result) {
                             console.log(result);
-                            $('#externalTravelMemberTable').html(result);
+                            $('#travelMemberTable').html(result);
                         }
                     })
                 }
             </script>
             <script type="text/javascript">
-                function DeleteExternalTravelMemberData(externalMemberId, travelId) {
-                    console.log(externalMemberId);
+                function DeleteExternalTravelMemberData(externalMemberId, travelId) {                    
                     return $.ajax({
                         type: "GET",
                         url: '/TripAddUser/DeleteExternalTravelMemberData?ExternalMemberID=' + externalMemberId + '&TravelId=' + travelId,
                         contentType: 'application/json',
                         success: function (result) {
-                            console.log(result);
-                            $('#externalTravelMemberTable').html(result);                           
+                            //console.log(result);
+                            $('#travelMemberTable').html(result);
+                            setEventListenerFroDragAndDrop("#dataTableTravelMember");
+                            $.ajax({
+                                url: '/TripAddUser/GetExternalMemberData?TravelId=' + travelId,
+                                type: "GET",
+                                contentType: 'json',
+                                success: function (resultTwo) {
+                                    //console.log(resultTwo);
+                                    $('#externalMemberDropDown').html(resultTwo);
+                                    $('.selectpicker').selectpicker();                                    
+                                }
+                            })
                         }
                     })
+                }
+                function updateStopExternal(memberID, travelId) {
+                    var stopId = document.getElementById("inputState").value;
+                    //console.log("updatestop = " + memberID + " " + stopId);
+                    return $.ajax({
+                        type: "GET",
+                        url: '/TripAddUser/UpdateStopExternal?MemberID=' + memberID + '&TravelId=' + travelId + '&StopId=' + stopId,
+                        contentType: 'json',
+                        success: function (result) {
+                            //console.log(result);
+                        }
+                    });
                 }
             </script>
         }

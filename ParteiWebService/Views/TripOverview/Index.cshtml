@@ -1,26 +1,66 @@
-﻿@using ParteiWebService.ViewModel
+﻿@using Aufgabe_2.ViewModel
 @model TripOverviewViewModel
 @{
     ViewData["Title"] = "Index";
 }
 
 
-<div class="container-fluid">
+    <div class="container-fluid">
 
-                <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800">Bevorstehende Reisen</h1>
-                </div>
-                <div class="row flex-nowrap overflow-auto">
-                    <partial name="_DisplayTrip"
-                             model="@Model.UpcomingTravels" />
-                </div>
-        
-            
-                <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800">Vergangene Reisen</h1>
-                </div>
-                <div class="row flex-nowrap overflow-auto">
-                    <partial name="_DisplayTrip"
-                             model="@Model.PastTravels" />
-                </div>
+        <ul class="nav nav-pills" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Bevorstehende Reisen</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Vergangene Reisen</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="pills-home-tab">
+            <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="home-tab">
+                @if (Model.UpcomingTravels.Count() > 0)
+                {
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    </div>
+                    <div class="row flex-nowrap overflow-auto">
+                        <partial name="_DisplayTrip"
+                                 model="@Model.UpcomingTravels" />
+                    </div>
+                }
+                else
+                {
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800"></h1>
+                    </div>
+                }
+            </div>
+            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-home-tab">
+                @if (Model.PastTravels.Count() > 0)
+                {
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800"></h1>
+                    </div>
+                    <div class="row flex-nowrap overflow-auto">
+                        <partial name="_DisplayTrip"
+                                 model="@Model.PastTravels" />
+                    </div>
+                }
+                else
+                {
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Keine vergangenen Reisen </h1>
+                    </div>
+                }
+            </div>
+        </div>
+  
     </div>
+
+@section scripts {
+    <script type="text/javascript">
+        $('#myTab a').on('click', function (e) {
+            e.preventDefault()
+            $(this).tab('show')
+        })
+        
+    </script>
+}

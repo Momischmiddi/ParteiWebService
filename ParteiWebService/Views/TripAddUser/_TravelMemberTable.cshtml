@@ -1,4 +1,4 @@
-﻿@using ParteiWebService.ViewModel
+﻿@using Aufgabe_2.ViewModel
 @using DataAccessLibrary.Models
 @model TripAddUserViewModel
 @{
@@ -14,7 +14,7 @@
                     <th></th>
                     <th>@Html.DisplayNameFor(model => model.TravelMembers.First().Member.PreName)</th>
                     <th>@Html.DisplayNameFor(model => model.TravelMembers.First().Member.LastName)</th>
-                    <th>Kosten</th>
+                    @*<th>Kosten</th>*@
                     <th>@Html.DisplayNameFor(model => model.TravelMembers.First().Stop.StopName)</th>
                 </tr>
             </thead>
@@ -22,29 +22,70 @@
                 @foreach (TravelMember travelMember in Model.TravelMembers)
                 {
                     <tr id="@travelMember.Member.ID">
-                        <td></td>
+                        <td>
+                            @* Bei dem Button muss dann noch die onClick hingebogen werden! *@
+                            <button onclick='deleteTravelMemberData("@travelMember.Member.ID", "@Model.Travel.TravelId")' href="#" class="d-none d-sm-inline-block btn btn-danger btn-circle">
+                                <span class="icon">
+                                    <i class="fas fa-trash-alt"></i>
+                                </span>
+                            </button>
+                        </td>
                         <td>@travelMember.Member.PreName</td>
                         <td>@travelMember.Member.LastName</td>
-                        <td>
-                            <div class="form-check">
-                                @if (travelMember.ActualCosts == travelMember.TargetCosts)
-                                {
-                                    <input type="checkbox" checked class="form-check-input" id="checkbox_@travelMember.ID" onclick="updateTravelCost(@travelMember.ID)">
-                                }
-                                else
-                                {
-                                    <input type="checkbox" class="form-check-input" id="checkbox_@travelMember.ID" onclick="updateTravelCost(@travelMember.ID)">
-                                }
+                        @*<td>
+                                <div class="form-check">
+                                    @if (travelMember.ActualCosts == travelMember.TargetCosts)
+                                    {
+                                        <input type="checkbox" checked class="form-check-input" id="checkbox_@travelMember.ID" onclick="updateTravelCost(@travelMember.ID)">
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" class="form-check-input" id="checkbox_@travelMember.ID" onclick="updateTravelCost(@travelMember.ID)">
+                                    }
 
-                                <label class="form-check-label" for="exampleCheck1">Bezahlt</label>
-                            </div>
-                            </td>
+                                    <label class="form-check-label" for="exampleCheck1">Bezahlt</label>
+                                </div>
+                            </td>*@ @* Was genau macht er hier mit den Stops...? *@
                         <td>
                             <select id="inputState" onchange='updateStop("@travelMember.Member.ID",@Model.Travel.TravelId)' class="form-control form-control-sm">
-                              
+
                                 @foreach (Stop stop in Model.Stops)
                                 {
                                     if (travelMember.StopId.Equals(stop.StopId) || travelMember.StopId.Equals(-1))
+                                    {
+                                        <option selected value="@stop.StopId">@stop.StopName</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@stop.StopId">@stop.StopName</option>
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                }
+                @foreach (ExternalTravelMember externalTravelMember in Model.ExternalTravelMembers)
+                {
+                    <tr id="@externalTravelMember.ExternalMember.ID" style="background:#d8d8d8">
+                        <td>
+                            <button onclick='DeleteExternalTravelMemberData("@externalTravelMember.ExternalMember.ID", "@Model.Travel.TravelId")' href="#" class="d-none d-sm-inline-block btn btn-danger btn-circle">
+                                <span class="icon">
+                                    <i class="fas fa-trash-alt"></i>
+                                </span>
+                            </button>
+                        </td>
+                        <td>@externalTravelMember.ExternalMember.PreName</td>
+                        <td>@externalTravelMember.ExternalMember.LastName</td>
+                        @*<td>@externalTravelMember.ActualCosts/@externalTravelMember.TargetCosts</td>*@
+                        <td>
+                            <select id="inputState" onchange='updateStopExternal("@externalTravelMember.ExternalMember.ID",@Model.Travel.TravelId)' class="form-control form-control-sm">
+                               @* @foreach (Stop stop in Model.Stops)
+                                {
+                                    <option value="@stop.StopId">@stop.StopName</option>
+                                }*@
+                                @foreach (Stop stop in Model.Stops)
+                                {
+                                    if (externalTravelMember.StopId.Equals(stop.StopId) || externalTravelMember.StopId.Equals(-1))
                                     {
                                         <option selected value="@stop.StopId">@stop.StopName</option>
                                     }

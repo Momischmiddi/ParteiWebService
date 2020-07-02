@@ -1,32 +1,32 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
-using ParteiWebService.Models;
+using Aufgabe_2.Models;
 using DataAccessLibrary.DataAccess;
 using DataAccessLibrary.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace ParteiWebService.Controllers
+namespace Aufgabe_2.Controllers
 {
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ParteiDbContext _parteiDbContext;
+        private readonly BobContext _bobContext;
 
         public AccountController(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ParteiDbContext parteiDbContext)
+            BobContext bobContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _parteiDbContext = parteiDbContext;
+            _bobContext = bobContext;
         }
 
         public IActionResult Login()
         {
-            return View();
+            return View(new LoginModel());
         }
 
         public IActionResult Register()
@@ -35,25 +35,39 @@ namespace ParteiWebService.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> LoginAsync(string username, string password)
+        public async Task<IActionResult> LoginAsync(LoginModel loginModel)
         {
-            var user = await _userManager.FindByNameAsync(username);
-
-            if (user != null)
+            if (ModelState.IsValid)
             {
-                var signInResult = await _signInManager.PasswordSignInAsync(user, password, false, false);
+                var user = await _userManager.FindByNameAsync(loginModel.Username);
 
-                if (signInResult.Succeeded)
+                if (user != null)
                 {
-                    var roles = await _userManager.GetRolesAsync(user);
-                    if (roles.Contains("Admin"))
+                    var signInResult = await _signInManager.PasswordSignInAsync(user, loginModel.Password, false, false);
+
+                    if (signInResult.Succeeded)
                     {
-                        return RedirectToAction("Index", "Admin", new { area = "" });
+                        var roles = await _userManager.GetRolesAsync(user);
+                        if (roles.Contains("Admin"))
+                        {
+                            return RedirectToAction("Index", "Admin", new { area = "" });
+                        }
+                        return RedirectToAction("Index", "Home", new { area = "" });
                     }
-                    return RedirectToAction("Index", "Home", new { area = "" });
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Benutzerdaten fehlerhaft");
+                        return View(loginModel);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Benutzerdaten fehlerhaft");
+                    return View(loginModel);
                 }
             }
-            return RedirectToAction("Login");
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            return View(new LoginModel());
         }
 
         [HttpPost]

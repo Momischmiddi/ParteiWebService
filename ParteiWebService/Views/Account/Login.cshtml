@@ -1,14 +1,18 @@
-﻿
+﻿@model Aufgabe_2.Models.LoginModel
 @{
     ViewData["Title"] = "Login";
 }
-<form action="/Account/Login" method="post" class="form-signin text-center">
-    <img class="mb-4" src="~/images/geschaeft.png" alt="" width="72" height="72">
-    <h1 class="h3 mb-3 font-weight-normal">Login</h1>
-    <label for="username" class="sr-only">Benutzername</label>
-    <input type="text" id="username" name="username" class="form-control" placeholder="Benutzername" required="" autofocus="">
-    <label for="password" class="sr-only">Password</label>
-    <input type="password" name="password" id="password" class="form-control" placeholder="Passwort" required="">
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Einloggen</button>
-    <p class="mt-5 mb-3 text-muted">© 2020</p>
-</form>
+    <form action="/Account/Login" method="post" class="form-signin text-center">
+        <img class="mb-4" src="~/images/geschaeft.png" alt="" width="72" height="72">
+        <h1 class="h3 mb-3 font-weight-normal">Login</h1>
+        <div class="form-group">
+            <label asp-for="Username" class="sr-only">Benutzername</label>
+            <input type="text" asp-for="Username" class="form-control" placeholder="Benutzername" required="" autofocus="" />
+            <span asp-validation-for="Username" class="text-danger"></span>
+            <label asp-for="Password" class="sr-only">Passwort</label>
+            <input type="password" asp-for="Password" class="form-control" placeholder="Password" required />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <button class="btn btn-lg btn-primary btn-block mt-2" type="submit">Einloggen</button>
+    </form>

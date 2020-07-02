@@ -7,12 +7,12 @@ using System.Net;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using ParteiWebService.CSV_Export;
-using ParteiWebService.ExportManagers;
-using ParteiWebService.MicroServiceHelpers.PDFService;
-using ParteiWebService.Models;
-using ParteiWebService.Utility;
-using ParteiWebService.Views.Manager;
+using Aufgabe_2.CSV_Export;
+using Aufgabe_2.ExportManagers;
+using Aufgabe_2.MicroServiceHelpers.PDFService;
+using Aufgabe_2.Models;
+using Aufgabe_2.Utility;
+using Aufgabe_2.Views.Manager;
 using DataAccessLibrary.DataAccess;
 using DataAccessLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -25,19 +25,19 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 
-namespace ParteiWebService.Controllers
+namespace Aufgabe_2.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ParteiDbContext _parteiDbContext;
+        private readonly BobContext _bobContext;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
 
-        public HomeController(ParteiDbContext parteiDbContext, RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager, IEmailSender emailSender)
+        public HomeController(BobContext bobContext, RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager, IEmailSender emailSender)
         {
             _emailSender = emailSender;
-            _parteiDbContext = parteiDbContext;
+            _bobContext = bobContext;
             _roleManager = roleManager;
             _userManager = userManager;
             createRolesandUsers();
@@ -47,18 +47,39 @@ namespace ParteiWebService.Controllers
         [HttpGet]
         public async Task<IActionResult> IndexAsync()
         {
+            /*
+            PDFExportManager.CreateMemberPDF(new ModelMember
+            {
+                Users = new List<User>
+                {
+                    new User
+                    {
+                        PreName = "Moritz",
+                        LastName = "Schmidt",
+                        Address = "Domänenstraße 16",
+                        Age = 24,
+                        City = "Tettnang",
+                        Contribution = 12.01,
+                        Postal = "88069"
+                    },
+
+                    new User
+                    {
+                        PreName = "Moritz",
+                        LastName = "Schmidt",
+                        Address = "Domänenstraße 16",
+                        Age = 24,
+                        City = "Tettnang",
+                        Contribution = 12.13,
+                        Postal = "88069"
+                    }
+                }
+            });
+            */
             var user = await _userManager.GetUserAsync(User);
-            var organizsationUser = _parteiDbContext.Organizations.Include(i => i.Admin).Where(u => u.Admin.Id.Equals(user.Id)).SingleOrDefault();
-            if(organizsationUser != null)
-            {
-                var allMembers = _parteiDbContext.Members.Where(a => a.Organization.Id.Equals(organizsationUser.Id)).ToList();
-                return View(allMembers);
-            }
-            else
-            {
-                return RedirectToAction("Account", "Login");
-            }
-            
+            var allMembers = _bobContext.Members.Where(a => a.Organization.Id == user.OrgranizationId).ToList();
+            return View(allMembers);
+
         }
 
         [HttpPost]
@@ -66,35 +87,35 @@ namespace ParteiWebService.Controllers
         {
             member.ID = Guid.NewGuid().ToString();
             var user = await _userManager.GetUserAsync(User);
-            var organizsationUser = _parteiDbContext.Organizations.Where(u => u.Admin.Id.Equals(user.Id)).SingleOrDefault();
-            member.OrganizationId = organizsationUser.Id;
+            member.OrganizationId = user.OrgranizationId;
             if (!member.IsActiveMember)
             {
                 member.ApplicationUser = null;
                 member.ApplicationUserId = null;
             }
-            _parteiDbContext.Add(member);
-            _parteiDbContext.SaveChanges();
+            _bobContext.Add(member);
+            _bobContext.SaveChanges();
 
-            if(member.IsActiveMember)
+            if (member.IsActiveMember)
             {
-               
+                member.ApplicationUser.OrgranizationId = user.OrgranizationId;
+
                 if (member.ApplicationUser == null)
                 {
                     return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
                 }
                 member.ApplicationUser.UserName = member.ID;
                 member.ApplicationUser.PasswordHash = Guid.NewGuid().ToString();
-                _parteiDbContext.SaveChanges();
+                _bobContext.SaveChanges();
 
                 var userId = await _userManager.GetUserIdAsync(member.ApplicationUser);
                 var email = await _userManager.GetEmailAsync(member.ApplicationUser);
                 var emailCode = await _userManager.GenerateEmailConfirmationTokenAsync(member.ApplicationUser);
                 var passwordCode = await _userManager.GeneratePasswordResetTokenAsync(member.ApplicationUser);
-                
+
                 emailCode = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(emailCode));
-                passwordCode = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(passwordCode));             
-                var fullUrl = this.Url.Action("SetPassword", "Account", new { userId = userId, emailCode = emailCode, passwordCode = passwordCode}, this.Request.Scheme);
+                passwordCode = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(passwordCode));
+                var fullUrl = this.Url.Action("SetPassword", "Account", new { userId = userId, emailCode = emailCode, passwordCode = passwordCode }, this.Request.Scheme);
 
                 MailManager mailManager = new MailManager();
                 mailManager.SendEmail(
@@ -110,8 +131,8 @@ namespace ParteiWebService.Controllers
         [HttpPost]
         public IActionResult UpdateMember(Member member)
         {
-            _parteiDbContext.Update(member);
-            _parteiDbContext.SaveChanges();
+            _bobContext.Update(member);
+            _bobContext.SaveChanges();
 
             return RedirectToAction("Index");
         }
@@ -119,7 +140,7 @@ namespace ParteiWebService.Controllers
 
         public IActionResult EditMember(string MemberID)
         {
-            return PartialView("_UpdateMember", _parteiDbContext.Members.Single(m => m.ID.Equals(MemberID)));
+            return PartialView("_UpdateMember", _bobContext.Members.Single(m => m.ID.Equals(MemberID)));
         }
 
         [HttpDelete]
@@ -130,11 +151,11 @@ namespace ParteiWebService.Controllers
         [HttpPost]
         public IActionResult Delete(string id)
         {
-            var member = _parteiDbContext.Members.Include(i => i.ApplicationUser).Single(m => m.ID.Equals(id));
-            _parteiDbContext.Members.Remove(member);
+            var member = _bobContext.Members.Include(i => i.ApplicationUser).Single(m => m.ID.Equals(id));
+            _bobContext.Members.Remove(member);
             try
             {
-                var deletedUser = _parteiDbContext.Users.SingleOrDefault(m => m.Id.Equals(member.ApplicationUser.Id));
+                var deletedUser = _bobContext.Users.SingleOrDefault(m => m.Id.Equals(member.ApplicationUser.Id));
                 _userManager.DeleteAsync(deletedUser);
             }
             catch (Exception)
@@ -142,13 +163,13 @@ namespace ParteiWebService.Controllers
 
             }
 
-            _parteiDbContext.SaveChanges();
+            _bobContext.SaveChanges();
             return RedirectToAction("Index");
         }
         [HttpPost]
         public IActionResult CsvExport()
         {
-            var allMembers = _parteiDbContext.Members.ToList();
+            var allMembers = _bobContext.Members.ToList();
             CSVExportManager.CreateMemberCSV(CSVExportManager.MapMemberToModelMember(allMembers), "wwwroot/export/export.csv");
 
             var net = new System.Net.WebClient();
@@ -164,7 +185,7 @@ namespace ParteiWebService.Controllers
         public async Task<IActionResult> PdfExport()
         {
             var memberListServiceURL = "https://seniorenbobspdfservice.azurewebsites.net/PDFCreate/CreateMemberListPDF";
-            var members = await _parteiDbContext.Members.ToListAsync();
+            var members = await _bobContext.Members.ToListAsync();
             var model = ModelCreators.CreateMemberListPDFModel(members);
 
             var postResult = await RequestHelper.SendPDFRequestAsync(memberListServiceURL, model);
@@ -209,16 +230,16 @@ namespace ParteiWebService.Controllers
 
             foreach (var modelMember in CSVExportManager.ReadMemberCSV(path).Users)
             {
-                _parteiDbContext.Add(CSVExportManager.MapModelMemberToMember(modelMember, Guid.NewGuid().ToString()));
+                _bobContext.Add(CSVExportManager.MapModelMemberToMember(modelMember, Guid.NewGuid().ToString()));
             }
-            _parteiDbContext.SaveChanges();
+            _bobContext.SaveChanges();
 
             System.IO.File.Delete(path);
 
-            var allMembers = _parteiDbContext.Members.ToList();
+            var allMembers = _bobContext.Members.ToList();
             return RedirectToAction("Index");
         }
- 
+
         private async Task createRolesandUsers()
         {
             bool x = await _roleManager.RoleExistsAsync("Admin");

@@ -1,9 +1,8 @@
-using ParteiWebService.StorageManagers;
+using Aufgabe_2.StorageManagers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using ParteiWebService.CosmosDB.DBModels;
 
-namespace ParteiWebService
+namespace Aufgabe_2
 {
     public class Program
     {

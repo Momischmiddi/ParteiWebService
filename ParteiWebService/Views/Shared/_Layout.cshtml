@@ -9,23 +9,14 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ParteiWebService</title>
+    <title>@ViewData["Title"] - Aufgabe_2</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="~/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
     <link href="~/css/sb-admin-2.min.css" rel="stylesheet" />
     <link href="~/lib/fontawesome-free/css/all.css" rel="stylesheet" />
     <link href="~/css/bootstrap-select.min.css" rel="stylesheet" />
 
-    <!--Externe Scripts und CSS Files -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css" />
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
-
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" />
-    <link rel="stylesheet" type="text/javascript" href="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js" />
-    <script type="text/javascript" src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
 
     <!--Eigene Scripts und CSS Files -->
     <script type="text/javascript" src="~/js/tripAddUser.js"></script>
@@ -71,17 +62,20 @@
                     <span>Reiseübersicht</span>
                 </a>
             </li>
-            <!-- Nav Item - Tables -->
-            <li class="nav-item">
-                <a class="nav-link" href="/TripCreate/Index">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Reise planen</span>
-                </a>
-            </li>
+            @if (User.IsInRole("Manager"))
+            {
+                <!-- Nav Item - Tables -->
+                <li class="nav-item">
+                    <a class="nav-link" href="/TripCreate/Index">
+                        <i class="fas fa-fw fa-table"></i>
+                        <span>Reise planen</span>
+                    </a>
+                </li>
+            }
             <!-- Divider -->
             <hr class="sidebar-divider">
 
-            @if (User.IsInRole("Admin"))
+            @if (User.IsInRole("Manager"))
             {
                 <!-- Heading -->
                 <div class="sidebar-heading">
@@ -89,9 +83,9 @@
                 </div>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="/Admin/Index">
+                    <a class="nav-link" href="/Manager/Index">
                         <i class="fas fa-fw fa-wrench"></i>
-                        <span>Admin</span>
+                        <span>Manager</span>
                     </a>
                 </li>
             }
@@ -169,7 +163,7 @@
                             </div>
 
                         </li>
-                        
+
                     </ul>
 
                 </nav>
@@ -240,6 +234,7 @@
                 $(this).addClass('active');
             });
             $('.selectpicker').selectpicker();
+
             $('#dataTable').DataTable(
                 {
                     "language": {

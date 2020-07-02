@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ParteiWebService.StorageManagers
+namespace Aufgabe_2.StorageManagers
 {
     public class Result
     {

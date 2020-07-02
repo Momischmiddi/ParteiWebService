@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ParteiWebService.ExportManagers
+namespace Aufgabe_2.ExportManagers
 {
     public class CSVMemberModel
     {

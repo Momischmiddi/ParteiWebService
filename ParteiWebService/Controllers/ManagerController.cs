@@ -6,10 +6,10 @@ using System.Net;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using ParteiWebService.CSV_Export;
-using ParteiWebService.MicroServiceHelpers.PDFService;
-using ParteiWebService.Models;
-using ParteiWebService.Utility;
+using Aufgabe_2.CSV_Export;
+using Aufgabe_2.MicroServiceHelpers.PDFService;
+using Aufgabe_2.Models;
+using Aufgabe_2.Utility;
 using DataAccessLibrary.DataAccess;
 using DataAccessLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -21,18 +21,18 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
-namespace ParteiWebService.Controllers
+namespace Aufgabe_2.Controllers
 {
     public class ManagerController : Controller
     {
 
-        public ParteiDbContext _parteiDbContext { get; }
+        public BobContext _bobContext { get; }
         private readonly UserManager<ApplicationUser> _userManager;
 
 
-        public ManagerController(ParteiDbContext parteiDbContext, UserManager<ApplicationUser> userManager)
+        public ManagerController(BobContext bobContext, UserManager<ApplicationUser> userManager)
         {
-            _parteiDbContext = parteiDbContext;
+            _bobContext = bobContext;
             _userManager = userManager;
         }
 
@@ -42,22 +42,26 @@ namespace ParteiWebService.Controllers
         public async Task<IActionResult> IndexAsync()
         {
             var user = await _userManager.GetUserAsync(User);
-            var organizsationUser = _parteiDbContext.Organizations.Where(u => u.Admin.Id.Equals(user.Id)).SingleOrDefault();
+            var organizsationUser = _bobContext.Organizations.Where(u => u.Admin.Id.Equals(user.Id)).SingleOrDefault();
 
             var memberSelectList = new ApplicationUserMultiselectModel()
             {
-                ApplicationUsers = _parteiDbContext.ApplicationUsers.Include(a => a.UserRoles).ThenInclude(a => a.Role).Include(m => m.Member).Where(a => a.Member.Organization.Name.Equals(organizsationUser.Name)).ToList(),
+                ApplicationUsers = _bobContext.ApplicationUsers.Include(a => a.UserRoles).ThenInclude(a => a.Role).Include(m => m.Member).Where(a => a.Member.Organization.Name.Equals(organizsationUser.Name)).ToList(),
                 SelectedMemberIDs = new List<String>()
             };
 
             return View(memberSelectList);
         }
 
-        [HttpDelete]
-        public IActionResult DeleteMember(string MemberID)
+        [HttpPost]
+        public async Task<IActionResult> DeleteAsync(string id)
         {
+            var user = await _userManager.FindByIdAsync(id);
+            await _userManager.RemoveFromRoleAsync(user, "Manager");
             return RedirectToAction("Index");
         }
+
+
         [HttpPost]
         public async Task<IActionResult> AddManagerAsync(ApplicationUserMultiselectModel applicationUserMultiselectModel)
         {
@@ -100,13 +104,13 @@ namespace ParteiWebService.Controllers
 
             foreach (var modelMember in CSVExportManager.ReadMemberCSV(path).Users)
             {
-                _parteiDbContext.Add(CSVExportManager.MapModelMemberToMember(modelMember, Guid.NewGuid().ToString()));
+                _bobContext.Add(CSVExportManager.MapModelMemberToMember(modelMember, Guid.NewGuid().ToString()));
             }
-            _parteiDbContext.SaveChanges();
+            _bobContext.SaveChanges();
 
             System.IO.File.Delete(path);
 
-            var allMembers = _parteiDbContext.Members.ToList();
+            var allMembers = _bobContext.Members.ToList();
             return RedirectToAction("Index");
         }
 

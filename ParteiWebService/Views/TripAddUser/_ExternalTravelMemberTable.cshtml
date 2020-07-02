@@ -1,4 +1,4 @@
-﻿@using ParteiWebService.ViewModel
+﻿@using Aufgabe_2.ViewModel
 @using DataAccessLibrary.Models
 @model TripAddUserViewModel
 @{
@@ -14,7 +14,7 @@
                     <th></th>
                     <th>@Html.DisplayNameFor(model => model.ExternalTravelMembers.First().ExternalMember.PreName)</th>
                     <th>@Html.DisplayNameFor(model => model.ExternalTravelMembers.First().ExternalMember.LastName)</th>
-                    <th>Kosten</th>
+                    @*<th>Kosten</th>*@
                     <th>@Html.DisplayNameFor(model => model.ExternalTravelMembers.First().Stop.StopName)</th>
                 </tr>
             </thead>

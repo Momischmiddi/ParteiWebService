@@ -1,4 +1,4 @@
-﻿using ParteiWebService.ExportManagers;
+﻿using Aufgabe_2.ExportManagers;
 using CsvHelper;
 using DataAccessLibrary.Models;
 using System;
@@ -7,7 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-namespace ParteiWebService.CSV_Export
+namespace Aufgabe_2.CSV_Export
 {
     public class CSVExportManager
     {

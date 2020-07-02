@@ -2,7 +2,7 @@
 using MongoDB.Bson.Serialization.IdGenerators;
 using System;
 
-namespace ParteiWebService.Models
+namespace Aufgabe_2.Models
 {
     public class ImageDataModel
     {

@@ -1,5 +1,8 @@
-using ParteiWebService.Services;
-using ParteiWebService.Views.Manager;
+using Aufgabe_2.CosmosDBModels;
+using Aufgabe_2.Services;
+using Aufgabe_2.StorageManagers;
+using Aufgabe_2.Views.Manager;
+using DataAccessLibrary.DataAccess;
 using DataAccessLibrary.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,9 +11,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using DataAccessLibrary.DataAccess;
 
-namespace ParteiWebService
+namespace Aufgabe_2
 {
     public class Startup
     {
@@ -20,18 +22,20 @@ namespace ParteiWebService
         }
 
         public IConfiguration Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
 
             services.AddIdentity<ApplicationUser, ApplicationRole>(config =>
             {
-                config.Password.RequiredLength = 4;
+                config.Password.RequiredLength = 6;       
                 config.Password.RequireDigit = false;
-                config.Password.RequireNonAlphanumeric =false;
+                config.Password.RequireNonAlphanumeric = false;
                 config.Password.RequireUppercase = false;
 
             })
-            .AddEntityFrameworkStores<ParteiDbContext>()
+            .AddEntityFrameworkStores<BobContext>()
             .AddDefaultTokenProviders();
 
             //services.AddAuthorization(config =>
@@ -53,7 +57,7 @@ namespace ParteiWebService
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-            services.AddDbContext<ParteiDbContext>(options => options.UseSqlite("Data Source=parteidb.db"));
+            services.AddDbContext<BobContext>(options => options.UseSqlite("Data Source=cloudbobdb.db"));
 
             services.AddTransient<IEmailSender, EmailSender>();
             services.Configure<Authmessagesenderoptions>(Configuration);

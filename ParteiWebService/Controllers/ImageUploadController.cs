@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ParteiWebService.Models;
+using Aufgabe_2.Models;
 using Microsoft.AspNetCore.Hosting;
-using ParteiWebService.StorageManagers;
+using Aufgabe_2.StorageManagers;
 using DataAccessLibrary.Models;
 using DataAccessLibrary.DataAccess;
 using MongoDB.Driver;
@@ -14,24 +14,24 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
-namespace ParteiWebService.Controllers
+namespace Aufgabe_2.Controllers
 {
     public class ImageUploadController : Controller
     {
         private readonly ILogger<ImageUploadController> _logger;
         private readonly IHostingEnvironment _environment;
-        private readonly ParteiDbContext _parteiDbContext;
+        private readonly BobContext _bobContext;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
         public ImageUploadController(ILogger<ImageUploadController> logger, IHostingEnvironment environment,
-            ParteiDbContext parteiDbContext,
+            BobContext bobContext,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager)
         {
             _environment = environment;
             _logger = logger;
-            _parteiDbContext = parteiDbContext;
+            _bobContext = bobContext;
             _userManager = userManager;
             _signInManager = signInManager;
         }
@@ -47,14 +47,14 @@ namespace ParteiWebService.Controllers
 
         private void AddOrganization()
         {
-            _parteiDbContext.Organizations.Add(new Organization
+            _bobContext.Organizations.Add(new Organization
             {
                 Name = "Piraten3"
             });
 
-            _parteiDbContext.SaveChanges();
-            var orgas = _parteiDbContext.Organizations.ToList();
-            var org = _parteiDbContext.Organizations.Where<Organization>(o => o.Name == "Piraten").First<Organization>();
+            _bobContext.SaveChanges();
+            var orgas = _bobContext.Organizations.ToList();
+            var org = _bobContext.Organizations.Where<Organization>(o => o.Name == "Piraten").First<Organization>();
 
             org.Members.Add(new Member
             {
@@ -63,16 +63,16 @@ namespace ParteiWebService.Controllers
                 PreName = "Moritz"
             });
 
-            _parteiDbContext.SaveChanges();
+            _bobContext.SaveChanges();
 
-            org = _parteiDbContext.Organizations.Where<Organization>(o => o.Name == "Piraten").First<Organization>();
+            org = _bobContext.Organizations.Where<Organization>(o => o.Name == "Piraten").First<Organization>();
 
-            _parteiDbContext.Organizations.Remove(org);
+            _bobContext.Organizations.Remove(org);
 
-            _parteiDbContext.SaveChanges();
+            _bobContext.SaveChanges();
 
             // Muss null sein, da entfernt..
-            org = _parteiDbContext.Organizations.Where<Organization>(o => o.Name == "Piraten").FirstOrDefault<Organization>();
+            org = _bobContext.Organizations.Where<Organization>(o => o.Name == "Piraten").FirstOrDefault<Organization>();
         }
 
         [HttpPost]

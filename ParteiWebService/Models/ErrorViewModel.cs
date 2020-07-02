@@ -1,6 +1,6 @@
 using System;
 
-namespace ParteiWebService.Models
+namespace Aufgabe_2.Models
 {
     public class ErrorViewModel
     {

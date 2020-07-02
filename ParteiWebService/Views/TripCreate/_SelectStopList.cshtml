@@ -1,10 +1,10 @@
-﻿@using ParteiWebService.ViewModel
+﻿@using Aufgabe_2.ViewModel
 @model TripCreateViewModel
 @{
     ViewData["Title"] = "_SelectStopList";
 }
 
 
-<div class="form-group">
-    @Html.DropDownListFor(m => m.tripStopId, new SelectList(Model.StopList.ToList(), "StopId", "StopName"), new { @class = "selectpicker", multiple = "true" })
+<div class="form-group nopadding">
+    @Html.ListBoxFor(m => m.SelectedStops, new SelectList(Model.StopList.ToList(), "StopId", "StopName"), new {@class = "selectpicker w-100", multiple = "true" })
 </div>
