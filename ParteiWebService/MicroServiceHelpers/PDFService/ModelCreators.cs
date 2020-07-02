@@ -49,7 +49,7 @@ namespace ParteiWebService.MicroServiceHelpers.PDFService
 
             return new TravelPDFModel
             {
-                Costs = travel.Costs,
+                Costs = 123,
                 Description = travel.Description,
                 Destination = travel.Destination,
                 EndDate = travel.EndDate,

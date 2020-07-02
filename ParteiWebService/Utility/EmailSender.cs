@@ -1,11 +1,11 @@
-﻿using Aufgabe_2.Services;
-using Microsoft.AspNetCore.Identity.UI.Services;
+﻿using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Options;
+using ParteiWebService.Services;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System.Threading.Tasks;
 
-namespace Aufgabe_2.Views.Manager
+namespace ParteiWebService.Views.Manager
 {
     public class EmailSender : IEmailSender
     {

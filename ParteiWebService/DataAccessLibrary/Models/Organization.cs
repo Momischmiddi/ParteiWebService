@@ -15,5 +15,6 @@ namespace DataAccessLibrary.Models
         public ApplicationUser Admin { get; set; }
         public string AdminId { get; set; }
         public string OrganizationImage { get; set; }
+        public IList<Travel> Travels{ get; set; }
     }
 }

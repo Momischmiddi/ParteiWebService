@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace Aufgabe_2.Models
+namespace ParteiWebService.Models
 {
     public class TravelImage
     {

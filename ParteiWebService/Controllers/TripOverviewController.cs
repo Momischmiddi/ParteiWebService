@@ -2,33 +2,33 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Aufgabe_2.ViewModel;
+using ParteiWebService.ViewModel;
 using DataAccessLibrary.DataAccess;
-using DataAccessLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using DataAccessLibrary.Models;
 
-namespace Aufgabe_2.Controllers
+namespace ParteiWebService.Controllers
 {
     public class TripOverviewController : Controller
     {
 
-        private readonly BobContext _bobContext;
+        private readonly ParteiDbContext _parteiDbContext;
         private readonly UserManager<ApplicationUser> _userManager;
 
 
-        public TripOverviewController(UserManager<ApplicationUser> userManager, BobContext bobContext)
+        public TripOverviewController(UserManager<ApplicationUser> userManager, ParteiDbContext parteiDbContext)
         {
             _userManager = userManager;
-            _bobContext = bobContext;
+            _parteiDbContext = parteiDbContext;;
         }
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
             
-            List<Travel> past = _bobContext.Travels.Include(x => x.Images).Include(x => x.TravelMembers).ThenInclude(m =>m.Member).ThenInclude(a=> a.ApplicationUser).Where(x=>x.StartDate < DateTime.Today && x.OrganizationId == user.OrgranizationId).OrderBy(x => x.StartDate).ToList();
-            List<Travel>  upcoming = _bobContext.Travels.Include(x => x.Images).Include(x => x.TravelMembers).ThenInclude(m => m.Member).ThenInclude(a => a.ApplicationUser).Where(x => x.StartDate >= DateTime.Today && x.OrganizationId == user.OrgranizationId).OrderBy(x => x.StartDate).ToList();
+            List<Travel> past = _parteiDbContext.Travels.Include(x => x.Images).Include(x => x.TravelMembers).ThenInclude(m =>m.Member).ThenInclude(a=> a.ApplicationUser).Where(x=>x.StartDate < DateTime.Today && x.OrganizationId == user.OrgranizationId).OrderBy(x => x.StartDate).ToList();
+            List<Travel>  upcoming = _parteiDbContext.Travels.Include(x => x.Images).Include(x => x.TravelMembers).ThenInclude(m => m.Member).ThenInclude(a => a.ApplicationUser).Where(x => x.StartDate >= DateTime.Today && x.OrganizationId == user.OrgranizationId).OrderBy(x => x.StartDate).ToList();
             
             TripOverviewViewModel tripOverviewViewModel = new TripOverviewViewModel()
             {
@@ -42,13 +42,13 @@ namespace Aufgabe_2.Controllers
         [HttpGet]
         public IActionResult AddTravelMember(int TravelId)
         {
-            var travel = _bobContext.Travels.Single(m => m.TravelId == TravelId);
+            var travel = _parteiDbContext.Travels.Single(m => m.TravelId == TravelId);
             var user = _userManager.GetUserAsync(User).Result;
-            user = _bobContext.ApplicationUsers.Include(m => m.Member).Single(a => a.Id.Equals(user.Id));
-            var member = _bobContext.Members.Single(m => m.ID.Equals(user.Member.ID));
+            user = _parteiDbContext.ApplicationUsers.Include(m => m.Member).Single(a => a.Id.Equals(user.Id));
+            var member = _parteiDbContext.Members.Single(m => m.ID.Equals(user.Member.ID));
 
             travel.TravelMembers.Add(new TravelMember() { Travel = travel, Member = member});
-            _bobContext.SaveChanges();
+            _parteiDbContext.SaveChanges();
             return RedirectToAction("Index");
         }
 
@@ -56,22 +56,22 @@ namespace Aufgabe_2.Controllers
         public IActionResult DeleteTravelMember(int TravelId)
         {
           
-            var travel = _bobContext.Travels.Single(m => m.TravelId == TravelId);
+            var travel = _parteiDbContext.Travels.Single(m => m.TravelId == TravelId);
             var user = _userManager.GetUserAsync(User).Result;
-            user = _bobContext.ApplicationUsers.Include(m => m.Member).Single(a => a.Id.Equals(user.Id));
-            var member = _bobContext.Members.Single(m => m.ID.Equals(user.Member.ID));
+            user = _parteiDbContext.ApplicationUsers.Include(m => m.Member).Single(a => a.Id.Equals(user.Id));
+            var member = _parteiDbContext.Members.Single(m => m.ID.Equals(user.Member.ID));
 
-            var travelMember = _bobContext.TravelMembers.Single(m => m.Member.ID == member.ID && m.Travel.TravelId == travel.TravelId);
-            _bobContext.Remove(travelMember);
+            var travelMember = _parteiDbContext.TravelMembers.Single(m => m.Member.ID == member.ID && m.Travel.TravelId == travel.TravelId);
+            _parteiDbContext.Remove(travelMember);
 
-            _bobContext.SaveChanges();
+            _parteiDbContext.SaveChanges();
             return RedirectToAction("Index");
         }
 
         public IActionResult DeleteTravel(int travelId)
         {
 
-            var travel = _bobContext.Travels.Where(x => x.TravelId == travelId).ToList();
+            var travel = _parteiDbContext.Travels.Where(x => x.TravelId == travelId).ToList();
 
             if(travel.Count > 1)
             {
@@ -81,7 +81,7 @@ namespace Aufgabe_2.Controllers
             {
                 throw new Exception("Fehler beim löschen! Keine Elemente gefunden.");
             }
-            _bobContext.Travels.Remove(travel[0]);
+            _parteiDbContext.Travels.Remove(travel[0]);
 
             return RedirectToAction("Index", "TripOverview");
         }
@@ -89,7 +89,7 @@ namespace Aufgabe_2.Controllers
         public IActionResult UpdateCostProgrssbar(int travelId)
         {
 
-            var travel = _bobContext.Travels.Where(x => x.TravelId == travelId).ToList();
+            var travel = _parteiDbContext.Travels.Where(x => x.TravelId == travelId).ToList();
 
 
             return PartialView("_CostProgressbar", travel);

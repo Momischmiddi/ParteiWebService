@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Aufgabe_2.ViewModel
+namespace ParteiWebService.ViewModel
 {
     public class TripOverviewViewModel
     {

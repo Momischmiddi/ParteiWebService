@@ -1,8 +1,8 @@
-using Aufgabe_2.StorageManagers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using ParteiWebService.StorageManagers;
 
-namespace Aufgabe_2
+namespace ParteiWebService
 {
     public class Program
     {

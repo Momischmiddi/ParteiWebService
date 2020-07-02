@@ -1,7 +1,4 @@
-using Aufgabe_2.CosmosDBModels;
-using Aufgabe_2.Services;
-using Aufgabe_2.StorageManagers;
-using Aufgabe_2.Views.Manager;
+using ParteiWebService.Views.Manager;
 using DataAccessLibrary.DataAccess;
 using DataAccessLibrary.Models;
 using Microsoft.AspNetCore.Builder;
@@ -11,8 +8,9 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ParteiWebService.Services;
 
-namespace Aufgabe_2
+namespace ParteiWebService
 {
     public class Startup
     {
@@ -35,7 +33,7 @@ namespace Aufgabe_2
                 config.Password.RequireUppercase = false;
 
             })
-            .AddEntityFrameworkStores<BobContext>()
+            .AddEntityFrameworkStores<ParteiDbContext>()
             .AddDefaultTokenProviders();
 
             //services.AddAuthorization(config =>
@@ -57,7 +55,7 @@ namespace Aufgabe_2
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-            services.AddDbContext<BobContext>(options => options.UseSqlite("Data Source=cloudbobdb.db"));
+            services.AddDbContext<ParteiDbContext>(options => options.UseSqlite("Data Source=cloudbobdb.db"));
 
             services.AddTransient<IEmailSender, EmailSender>();
             services.Configure<Authmessagesenderoptions>(Configuration);

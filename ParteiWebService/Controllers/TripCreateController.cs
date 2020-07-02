@@ -1,26 +1,25 @@
-﻿using Aufgabe_2.StorageManagers;
-using Aufgabe_2.ViewModel;
-using DataAccessLibrary.DataAccess;
+﻿using DataAccessLibrary.DataAccess;
 using DataAccessLibrary.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using ParteiWebService.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Aufgabe_2.Controllers
+namespace ParteiWebService.Controllers
 {
     public class TripCreateController : Controller
     {
-        private readonly BobContext _bobContext;
+        private readonly ParteiDbContext _parteiDbContext;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public TripCreateController(BobContext bobContext, UserManager<ApplicationUser> userManager)
+        public TripCreateController(ParteiDbContext parteiDbContext, UserManager<ApplicationUser> userManager)
         {
-            _bobContext = bobContext;
+            _parteiDbContext = parteiDbContext;;
             _userManager = userManager;
         }
 
@@ -31,7 +30,7 @@ namespace Aufgabe_2.Controllers
             var tripCreateViewModel = new TripCreateViewModel()
             {
                 Travel = new Travel() { OrganizationId = user.OrgranizationId},
-                StopList = _bobContext.Stops.Where(x=>!x.StopId.Equals(-1)).ToList(),
+                StopList = _parteiDbContext.Stops.Where(x=>!x.StopId.Equals(-1)).ToList(),
                 SelectedStops = new List<int>(),
             };
             return View(tripCreateViewModel);
@@ -39,12 +38,12 @@ namespace Aufgabe_2.Controllers
 
         public IActionResult UpdateTravel(int tripId)
         {
-            var travel = _bobContext.Travels.Find(tripId);
-            var stopList = _bobContext.TravelStops.Where(x => x.TravelId == tripId).Select(x => x.StopId).ToList();
+            var travel = _parteiDbContext.Travels.Find(tripId);
+            var stopList = _parteiDbContext.TravelStops.Where(x => x.TravelId == tripId).Select(x => x.StopId).ToList();
             var tripCreateViewModel = new TripCreateViewModel()
             {
                 Travel = travel,
-                StopList = _bobContext.Stops.ToList(),
+                StopList = _parteiDbContext.Stops.ToList(),
                 SelectedStops = stopList,
             };
             return View(tripCreateViewModel);
@@ -53,10 +52,10 @@ namespace Aufgabe_2.Controllers
         [HttpPost]
         public IActionResult UpdateTravel(TripCreateViewModel tripCreateViewModel)
         {
-            _bobContext.Travels.Update(tripCreateViewModel.Travel);           
-            var travel = _bobContext.Travels.Include(t => t.TravelStops).Single(t => t.TravelId == tripCreateViewModel.Travel.TravelId);
-            _bobContext.TravelStops.RemoveRange(travel.TravelStops);
-            _bobContext.SaveChanges();
+            _parteiDbContext.Travels.Update(tripCreateViewModel.Travel);           
+            var travel = _parteiDbContext.Travels.Include(t => t.TravelStops).Single(t => t.TravelId == tripCreateViewModel.Travel.TravelId);
+            _parteiDbContext.TravelStops.RemoveRange(travel.TravelStops);
+            _parteiDbContext.SaveChanges();
 
             foreach (int stop in tripCreateViewModel.SelectedStops)
             {
@@ -65,9 +64,9 @@ namespace Aufgabe_2.Controllers
                     TravelId = tripCreateViewModel.Travel.TravelId,
                     StopId = stop,
                 };
-                _bobContext.Add(travelStop);
+                _parteiDbContext.Add(travelStop);
             }
-            _bobContext.SaveChanges();
+            _parteiDbContext.SaveChanges();
 
             return RedirectToAction("Index", "TripOverview");
         }
@@ -119,8 +118,8 @@ namespace Aufgabe_2.Controllers
             //}
 
             Console.WriteLine(tripCreateViewModel.Travel.Description);
-            _bobContext.Add(tripCreateViewModel.Travel);
-            _bobContext.SaveChanges();
+            _parteiDbContext.Add(tripCreateViewModel.Travel);
+            _parteiDbContext.SaveChanges();
 
             foreach (int stop in tripCreateViewModel.SelectedStops)
             {
@@ -129,31 +128,31 @@ namespace Aufgabe_2.Controllers
                     TravelId = tripCreateViewModel.Travel.TravelId,
                     StopId = stop,
                 };
-                _bobContext.Add(travelStop);
+                _parteiDbContext.Add(travelStop);
             }
 
-            _bobContext.SaveChanges();
+            _parteiDbContext.SaveChanges();
 
             return RedirectToAction("Index", "TripOverview");
         }
 
         public IActionResult StopList(String stopName)
         {
-            if (_bobContext.Stops.Where(x => x.StopName.ToLower().Equals(stopName.ToLower())).Count() >= 1)
+            if (_parteiDbContext.Stops.Where(x => x.StopName.ToLower().Equals(stopName.ToLower())).Count() >= 1)
             {
                 throw new ArgumentException("Element existiert bereits!");
             }
 
-            _bobContext.Add(new Stop()
+            _parteiDbContext.Add(new Stop()
             {
                 StopName=stopName,
             });
-            _bobContext.SaveChanges();
+            _parteiDbContext.SaveChanges();
 
 
             var tripCreateViewModel = new TripCreateViewModel()
             {
-                StopList = _bobContext.Stops.Where(x => !x.StopId.Equals(-1)).ToList(),
+                StopList = _parteiDbContext.Stops.Where(x => !x.StopId.Equals(-1)).ToList(),
                 SelectedStops = new List<int>(),
             };
 

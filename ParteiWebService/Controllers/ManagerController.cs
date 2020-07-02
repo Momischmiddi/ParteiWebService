@@ -2,37 +2,29 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Aufgabe_2.CSV_Export;
-using Aufgabe_2.MicroServiceHelpers.PDFService;
-using Aufgabe_2.Models;
-using Aufgabe_2.Utility;
 using DataAccessLibrary.DataAccess;
 using DataAccessLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
+using ParteiWebService.CSV_Export;
+using ParteiWebService.Models;
 
-namespace Aufgabe_2.Controllers
+namespace ParteiWebService.Controllers
 {
     public class ManagerController : Controller
     {
 
-        public BobContext _bobContext { get; }
+        public ParteiDbContext _parteiDbContext { get; }
         private readonly UserManager<ApplicationUser> _userManager;
 
 
-        public ManagerController(BobContext bobContext, UserManager<ApplicationUser> userManager)
+        public ManagerController(ParteiDbContext parteiDbContext, UserManager<ApplicationUser> userManager)
         {
-            _bobContext = bobContext;
+            _parteiDbContext = parteiDbContext;;
             _userManager = userManager;
         }
 
@@ -42,11 +34,11 @@ namespace Aufgabe_2.Controllers
         public async Task<IActionResult> IndexAsync()
         {
             var user = await _userManager.GetUserAsync(User);
-            var organizsationUser = _bobContext.Organizations.Where(u => u.Admin.Id.Equals(user.Id)).SingleOrDefault();
+            var organizsationUser = _parteiDbContext.Organizations.Where(u => u.Admin.Id.Equals(user.Id)).SingleOrDefault();
 
             var memberSelectList = new ApplicationUserMultiselectModel()
             {
-                ApplicationUsers = _bobContext.ApplicationUsers.Include(a => a.UserRoles).ThenInclude(a => a.Role).Include(m => m.Member).Where(a => a.Member.Organization.Name.Equals(organizsationUser.Name)).ToList(),
+                ApplicationUsers = _parteiDbContext.ApplicationUsers.Include(a => a.UserRoles).ThenInclude(a => a.Role).Include(m => m.Member).Where(a => a.Member.Organization.Name.Equals(organizsationUser.Name)).ToList(),
                 SelectedMemberIDs = new List<String>()
             };
 
@@ -104,13 +96,13 @@ namespace Aufgabe_2.Controllers
 
             foreach (var modelMember in CSVExportManager.ReadMemberCSV(path).Users)
             {
-                _bobContext.Add(CSVExportManager.MapModelMemberToMember(modelMember, Guid.NewGuid().ToString()));
+                _parteiDbContext.Add(CSVExportManager.MapModelMemberToMember(modelMember, Guid.NewGuid().ToString()));
             }
-            _bobContext.SaveChanges();
+            _parteiDbContext.SaveChanges();
 
             System.IO.File.Delete(path);
 
-            var allMembers = _bobContext.Members.ToList();
+            var allMembers = _parteiDbContext.Members.ToList();
             return RedirectToAction("Index");
         }
 

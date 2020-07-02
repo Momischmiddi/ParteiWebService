@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Aufgabe_2.Models
+namespace ParteiWebService.Models
 {
     public class LoginModel
     {

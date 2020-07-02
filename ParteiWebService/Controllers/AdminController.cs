@@ -1,36 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Aufgabe_2.Models;
 using MongoDB.Driver;
 using Microsoft.AspNetCore.Authorization;
 using DataAccessLibrary.DataAccess;
-using System.Drawing.Imaging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using DataAccessLibrary.Models;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
-using Aufgabe_2.Utility;
+using ParteiWebService.Utility;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Http;
 
-namespace Aufgabe_2.Controllers
+namespace ParteiWebService.Controllers
 {
     public class AdminController : Controller
     {
 
-        public BobContext _bobContext { get; }
+        public ParteiDbContext _parteiDbContext { get; }
         private readonly UserManager<ApplicationUser> _userManager;
 
 
-        public AdminController(BobContext bobContext, UserManager<ApplicationUser> userManager)
+        public AdminController(ParteiDbContext parteiDbContext, UserManager<ApplicationUser> userManager)
         {
-            _bobContext = bobContext;
+            _parteiDbContext = parteiDbContext;;
             _userManager = userManager;
         }
 
@@ -39,7 +34,7 @@ namespace Aufgabe_2.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return View(_bobContext.Organizations.Include(x => x.Admin).ToList());
+            return View(_parteiDbContext.Organizations.Include(x => x.Admin).ToList());
         }
 
 
@@ -56,11 +51,11 @@ namespace Aufgabe_2.Controllers
             organization.Admin.PasswordHash = Guid.NewGuid().ToString();
             organization.Admin.UserName = organization.Admin.Id;
 
-            _bobContext.Add(organization);
-            _bobContext.SaveChanges();
+            _parteiDbContext.Add(organization);
+            _parteiDbContext.SaveChanges();
 
             organization.Admin.OrgranizationId = organization.Id;
-            _bobContext.SaveChanges();
+            _parteiDbContext.SaveChanges();
 
             var response = await _userManager.AddToRoleAsync(organization.Admin, "Manager");
 

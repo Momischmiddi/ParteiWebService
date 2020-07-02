@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Aufgabe_2.Services
+namespace ParteiWebService.Services
 {
     public class Authmessagesenderoptions
     {

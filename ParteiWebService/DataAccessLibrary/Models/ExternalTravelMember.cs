@@ -19,6 +19,6 @@ namespace DataAccessLibrary.Models
 
 
         public Stop Stop { get; set; }
-        public int StopId { get; set; }
+        public int? StopId { get; set; }
     }
 }

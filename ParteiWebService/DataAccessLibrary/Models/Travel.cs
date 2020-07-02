@@ -21,8 +21,6 @@ namespace DataAccessLibrary.Models
         public string Description { get; set; }
         [Display(Name = "Abfahrtsort")]
         public string Departure { get; set; }
-        [Display(Name = "Kosten")]
-        public double Costs { get; set; }
         [Display(Name = "Maximale Teilnehmeranzahl")]
         public int MaxTraveler { get; set; }
 
@@ -33,5 +31,9 @@ namespace DataAccessLibrary.Models
         public List<TravelMember> TravelMembers { get; } = new List<TravelMember>();
 
         public ICollection<TravelStop> TravelStops { get; set; }
+
+        public int OrganizationId { get; set; }
+        public Organization Organization { get; set; }
+
     }
 }

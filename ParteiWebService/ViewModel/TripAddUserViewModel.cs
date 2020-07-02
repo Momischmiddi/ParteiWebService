@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Aufgabe_2.ViewModel
+namespace ParteiWebService.ViewModel
 {
     public class TripAddUserViewModel
     {
