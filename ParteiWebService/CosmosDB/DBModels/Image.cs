@@ -14,6 +14,9 @@ namespace ParteiWebService.CosmosDB.DBModels
         [BsonElement("BlobUrl")]
         public string BlobUrl { get; set; }
 
+        [BsonElement("TravelId")]
+        public Guid TravelId { get; set; }
+
         public Image()
         {
             ImageId = Guid.NewGuid();

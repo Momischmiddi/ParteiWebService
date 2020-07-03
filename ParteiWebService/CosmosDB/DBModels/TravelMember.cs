@@ -8,7 +8,7 @@ namespace ParteiWebService.CosmosDB.DBModels
         [BsonElement("TravelMemberId")]
         public Guid TravelMemberId { get; set; } // Shard Key
 
-        [BsonElement("targetcosts")]
+        [BsonElement("Targetcosts")]
         public double TargetCosts { get; set; }
 
         [BsonElement("actualcosts")]

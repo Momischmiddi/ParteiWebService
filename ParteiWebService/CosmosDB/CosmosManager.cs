@@ -8,6 +8,11 @@ namespace ParteiWebService
     public class CosmosManager
     {
         public static IMongoCollection<Image> Images;
+        public static IMongoCollection<Organization> Organizations;
+        public static IMongoCollection<Stop> Stops;
+        public static IMongoCollection<Travel> Travels;
+        public static IMongoCollection<TravelMember> TravelMembers;
+        public static IMongoCollection<TravelStop> TravelStops;
 
         public static void Setup()
         {
@@ -29,6 +34,11 @@ namespace ParteiWebService
                 var mongoDataBase = client.GetDatabase("parteidb");
 
                 Images = mongoDataBase.GetCollection<Image>("Images");
+                Organizations = mongoDataBase.GetCollection<Organization>("Organizations");
+                Stops = mongoDataBase.GetCollection<Stop>("Stops");
+                Travels = mongoDataBase.GetCollection<Travel>("Travels");
+                TravelMembers = mongoDataBase.GetCollection<TravelMember>("TravelMembers");
+                TravelStops = mongoDataBase.GetCollection<TravelStop>("TravelStops");
             } 
             catch(Exception e)
             {
