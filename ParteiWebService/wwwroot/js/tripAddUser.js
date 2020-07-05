@@ -190,9 +190,10 @@ function deleteTravelMemberData(memberID, travelId) {
     });
 }
 
-function updateStop(memberID, travelId) {
-    var stopId = document.getElementById("inputState").value;
-    //console.log("updatestop = " + memberID + " " + stopId);
+function updateStop(memberName, memberID, travelId) {
+    var memName = memberName;
+    var stop = document.getElementById(memName);
+    var stopId = stop.options[stop.selectedIndex].value;           
     return $.ajax({
         type: "GET",
         url: '/TripAddUser/UpdateStop?MemberID=' + memberID + '&TravelId=' + travelId + '&StopId=' + stopId,

@@ -184,15 +184,16 @@
                         }
                     })
                 }
-                function updateStopExternal(memberID, travelId) {
-                    var stopId = document.getElementById("inputState").value;
-                    //console.log("updatestop = " + memberID + " " + stopId);
+                function updateStopExternal(memberName, memberID, travelId) {
+                    var memName = memberName;                    
+                    var stop = document.getElementById(memName); 
+                    var stopId = stop.options[stop.selectedIndex].value;                           
                     return $.ajax({
                         type: "GET",
-                        url: '/TripAddUser/UpdateStopExternal?MemberID=' + memberID + '&TravelId=' + travelId + '&StopId=' + stopId,
+                        url: '/TripAddUser/UpdateStopExternal?ExternalMemberId=' + memberID + '&TravelId=' + travelId + '&StopId=' + stopId,
                         contentType: 'json',
                         success: function (result) {
-                            //console.log(result);
+                            
                         }
                     });
                 }

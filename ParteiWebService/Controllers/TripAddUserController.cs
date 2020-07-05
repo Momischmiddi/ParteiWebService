@@ -145,13 +145,14 @@ namespace ParteiWebService.Controllers
             {
                 mem.Add(_parteiDbContext.Members.Single(x => x.ID.Equals(id)));
             }
-            List<Stop> stops = _parteiDbContext.Stops.ToList();
+            List<Stop> stops = _parteiDbContext.Stops.ToList(); //evl hängt es hier an den Stops...
             var member = _parteiDbContext.TravelMembers.Include(x => x.Member).Where(x => x.Travel.TravelId.Equals(travelId)).ToList();
             List<ExternalTravelMember> externalTravelMembers = _parteiDbContext.ExternalTravelMembers.Where(x => x.Travel.TravelId.Equals(travelId)).ToList();
+            List<ExternalMember> externalMembers = _parteiDbContext.ExternalMembers.ToList();
             var tripAddUserViewModel = new TripAddUserViewModel
             {
                 Members = mem,
-                ExternalMembers = null,
+                ExternalMembers = externalMembers,
                 SelectedExternalMemeberIDs = null,
                 TravelMembers = member,
                 Travel = _parteiDbContext.Travels.Single(x => x.TravelId.Equals(travelId)),
