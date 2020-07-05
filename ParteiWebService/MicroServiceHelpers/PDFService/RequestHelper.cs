@@ -11,6 +11,14 @@ namespace ParteiWebService.MicroServiceHelpers.PDFService
 {
     public class RequestHelper
     {
+        public static string PDFMicroServiceUrl = "https://parteipdfgenerator.azurewebsites.net/PDFCreate/";
+
+        public enum EndPoint
+        {
+            CreateMemberListPDF,
+            CreateTripPDF
+        }
+
         private static HttpClient client = new HttpClient();
         public static async Task<MemoryStream> GetPDFContentAsync(HttpResponseMessage response)
         {
@@ -22,11 +30,12 @@ namespace ParteiWebService.MicroServiceHelpers.PDFService
             return content;
         }
 
-        public static async Task<HttpResponseMessage> SendPDFRequestAsync(string url, object payload)
+        public static async Task<HttpResponseMessage> SendPDFRequestAsync(EndPoint endPoint, object payload)
         {
             var jsonPayload = Newtonsoft.Json.JsonConvert.SerializeObject(payload);
+            var microServiceEndpoint = PDFMicroServiceUrl + endPoint.ToString();
 
-            return await client.PostAsync(url, new StringContent(jsonPayload, Encoding.UTF8, "application/json"));
+            return await client.PostAsync(microServiceEndpoint, new StringContent(jsonPayload, Encoding.UTF8, "application/json"));
         }
     }
 }
