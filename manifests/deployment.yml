@@ -1,0 +1,16 @@
+apiVersion : apps/v1beta1
+kind: Deployment
+metadata:
+  name: "parteicluster-db10"
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: "parteicluster-db10"
+    spec:
+      containers:
+        - name: "parteicluster-db10"
+          image: "parteicluster.azurecr.io/parteicluster"
+          ports:
+          - containerPort: 80
