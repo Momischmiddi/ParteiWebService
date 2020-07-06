@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using ParteiWebService.Models;
+using ParteiWebService.StorageManagers;
 using ParteiWebService.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -19,18 +21,18 @@ namespace ParteiWebService.Controllers
 
         public TripCreateController(ParteiDbContext parteiDbContext, UserManager<ApplicationUser> userManager)
         {
-            _parteiDbContext = parteiDbContext;;
+            _parteiDbContext = parteiDbContext; ;
             _userManager = userManager;
         }
 
         public async Task<IActionResult> IndexAsync()
         {
-            var user =  await _userManager.GetUserAsync(User);
+            var user = await _userManager.GetUserAsync(User);
 
             var tripCreateViewModel = new TripCreateViewModel()
             {
-                Travel = new Travel() { OrganizationId = user.OrgranizationId},
-                StopList = _parteiDbContext.Stops.Where(x=>!x.StopId.Equals(-1)).ToList(),
+                Travel = new Travel() { OrganizationId = user.OrgranizationId },
+                StopList = _parteiDbContext.Stops.Where(x => !x.StopId.Equals(-1)).ToList(),
                 SelectedStops = new List<int>(),
             };
             return View(tripCreateViewModel);
@@ -50,12 +52,56 @@ namespace ParteiWebService.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateTravel(TripCreateViewModel tripCreateViewModel)
+        public async Task<IActionResult> UpdateTravelAsync(TripCreateViewModel tripCreateViewModel)
         {
-            _parteiDbContext.Travels.Update(tripCreateViewModel.Travel);           
-            var travel = _parteiDbContext.Travels.Include(t => t.TravelStops).Single(t => t.TravelId == tripCreateViewModel.Travel.TravelId);
+            _parteiDbContext.Travels.Update(tripCreateViewModel.Travel);
+            var travel = _parteiDbContext.Travels.Include(t => t.TravelStops).Include(i => i.Images).Single(t => t.TravelId == tripCreateViewModel.Travel.TravelId);
             _parteiDbContext.TravelStops.RemoveRange(travel.TravelStops);
+            tripCreateViewModel.Travel = travel;
             _parteiDbContext.SaveChanges();
+            
+            if (HttpContext.Request.Form.Files != null)
+            {
+                var files = HttpContext.Request.Form.Files;
+                List<TravelImage> travelImages = new List<TravelImage>();
+                List<Image> images = new List<Image>();
+
+                foreach (var file in files)
+                {
+                    travelImages.Add(new TravelImage() { File = file, FileName = file.FileName });
+                    images.Add(new Image()
+                    {
+                        ImageName = file.FileName,
+                        ImageFileSize = int.Parse(file.Length.ToString()),
+                        ImageFileType = file.ContentType,
+                    });
+                }
+
+                if (files.Count > 0)
+                {
+                    var result = await BlobManager.AddTravelImagesAsync(travelImages);
+                    if (result.Successfull)
+                    {
+                        for (int i = 0; i < files.Count; i++)
+                        {
+                            images[i].ImageUrl = ((IList<string>)result.Payload)[i];
+                        }
+                    }
+                    if(tripCreateViewModel.Travel.Images.Count > 0)
+                    {
+                        tripCreateViewModel.Travel.Images.RemoveRange(tripCreateViewModel.Travel.Images.IndexOf(tripCreateViewModel.Travel.Images.First()), tripCreateViewModel.Travel.Images.Count());
+                    }
+                    tripCreateViewModel.Travel.Images = images;
+
+                }
+                else
+                {
+                    tripCreateViewModel.Travel.Images = new List<Image>();
+                }
+            }
+
+            _parteiDbContext.SaveChanges();
+
 
             foreach (int stop in tripCreateViewModel.SelectedStops)
             {
@@ -75,47 +121,52 @@ namespace ParteiWebService.Controllers
         [HttpPost]
         public async Task<IActionResult> AddTravelAsync(TripCreateViewModel tripCreateViewModel)
         {
-            //if (HttpContext.Request.Form.Files != null)
-            //{
-            //    var files = HttpContext.Request.Form.Files;
-            //    foreach (var file in files)
-            //    {
-            //        if (file.Length > 0)
-            //        {
-            //            var result = await BlobManager.AddImageAsync(file.FileName, file);
+            if (HttpContext.Request.Form.Files != null)
+            {
+                var files = HttpContext.Request.Form.Files;
+                List<TravelImage> travelImages = new List<TravelImage>();
+                List<Image> images = new List<Image>();
 
-            //            if (result.Successfull)
-            //            {
-            //                var FileName = file.FileName;
-            //                var FileSize = int.Parse(file.Length.ToString());
-            //                var FileType = file.ContentType;
-            //                var ImageUrl = (String)result.Payload;
+                foreach (var file in files)
+                {
+                    travelImages.Add(new TravelImage() { File = file, FileName = file.FileName });
+                    images.Add(new Image()
+                    {
+                        ImageName = file.FileName,
+                        ImageFileSize = int.Parse(file.Length.ToString()),
+                        ImageFileType = file.ContentType,
+                    });
+                }
 
+                if (files.Count > 0)
+                {
+                    var result = await BlobManager.AddTravelImagesAsync(travelImages);
+                    if (result.Successfull)
+                    {
+                        for (int i = 0; i < files.Count; i++)
+                        {
+                            images[i].ImageUrl = ((IList<string>)result.Payload)[i];
+                        }
+                    }
+                    tripCreateViewModel.Travel.Images = images;
+                }
+                else
+                {
+                    tripCreateViewModel.Travel.Images = new List<Image>();
+                }
+            }
 
-            //                tripCreateViewModel.Travel.Images.Add(new Image
-            //                {
-            //                    ImageUrl = ImageUrl,
-            //                    ImageName = FileName,
-            //                    ImageFileSize = FileSize,
-            //                    ImageFileType = FileType,
-            //                });
+            if (tripCreateViewModel.Travel.Images.Count == 0)
+            {
+                tripCreateViewModel.Travel.Images.Add(new Image
+                {
+                    ImageUrl = null,
+                    ImageName = "Kein Foto hochgeladen",
+                    ImageFileSize = 0,
+                    ImageFileType = null,
 
-            //            }
-            //        }
-            //    }
-            //}
-
-            //if (tripCreateViewModel.Travel.Images.Count == 0)
-            //{
-            //    tripCreateViewModel.Travel.Images.Add(new Image
-            //    {
-            //        ImageUrl = null,
-            //        ImageName = "Kein Foto hochgeladen",
-            //        ImageFileSize = 0,
-            //        ImageFileType = null,
-
-            //    });
-            //}
+                });
+            }
 
             Console.WriteLine(tripCreateViewModel.Travel.Description);
             _parteiDbContext.Add(tripCreateViewModel.Travel);
@@ -145,7 +196,7 @@ namespace ParteiWebService.Controllers
 
             _parteiDbContext.Add(new Stop()
             {
-                StopName=stopName,
+                StopName = stopName,
             });
             _parteiDbContext.SaveChanges();
 

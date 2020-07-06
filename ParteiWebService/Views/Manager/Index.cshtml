@@ -74,7 +74,14 @@
         </form>
 
         <div class="row mt-3">
-            <img src="~/demoImages/23509.jpg" />
+            @if (Model.Organization.OrganizationImage != null)
+            {
+                <img src="@Model.Organization.OrganizationImage" />
+            }
+            else
+            {
+                <img src="~/demoImages/23509.jpg" />
+            }
         </div>
     </div>
 </div>

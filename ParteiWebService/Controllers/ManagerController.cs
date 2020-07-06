@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using DataAccessLibrary.DataAccess;
 using DataAccessLibrary.Models;
@@ -38,32 +39,10 @@ namespace ParteiWebService.Controllers
                 var files = HttpContext.Request.Form.Files;
                 var result = await BlobManager.AddImageAsync(organizationImage.FileName, organizationImage);
                 var payload = result.Payload;
-
-                //foreach (var file in files)
-                //{
-                //    if (file.Length > 0)
-                //    {
-                //        var result = await BlobManager.AddImageAsync(file.FileName, file);
-
-                //        if (result.Successfull)
-                //        {
-                //            var FileName = file.FileName;
-                //            var FileSize = int.Parse(file.Length.ToString());
-                //            var FileType = file.ContentType;
-                //            var ImageUrl = (String)result.Payload;
-
-
-                //            tripCreateViewModel.Travel.Images.Add(new Image
-                //            {
-                //                ImageUrl = ImageUrl,
-                //                ImageName = FileName,
-                //                ImageFileSize = FileSize,
-                //                ImageFileType = FileType,
-                //            });
-
-                //        }
-                //    }
-                //}
+                var user = await _userManager.GetUserAsync(User);
+                var orga = _parteiDbContext.Organizations.Single(x => x.Id == user.OrgranizationId);
+                orga.OrganizationImage = payload.ToString();
+                _parteiDbContext.SaveChanges();
             }
             return RedirectToAction("Index");
         }
