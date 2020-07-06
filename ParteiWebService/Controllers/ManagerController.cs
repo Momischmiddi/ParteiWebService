@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ParteiWebService.CSV_Export;
 using ParteiWebService.Models;
+using ParteiWebService.StorageManagers;
+using ParteiWebService.ViewModel;
 
 namespace ParteiWebService.Controllers
 {
@@ -28,21 +30,62 @@ namespace ParteiWebService.Controllers
             _userManager = userManager;
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SaveImage(IFormFile organizationImage)
+        {
+            if (HttpContext.Request.Form.Files != null)
+            {
+                var files = HttpContext.Request.Form.Files;
+                var result = await BlobManager.AddImageAsync(organizationImage.FileName, organizationImage);
+                var payload = result.Payload;
+
+                //foreach (var file in files)
+                //{
+                //    if (file.Length > 0)
+                //    {
+                //        var result = await BlobManager.AddImageAsync(file.FileName, file);
+
+                //        if (result.Successfull)
+                //        {
+                //            var FileName = file.FileName;
+                //            var FileSize = int.Parse(file.Length.ToString());
+                //            var FileType = file.ContentType;
+                //            var ImageUrl = (String)result.Payload;
+
+
+                //            tripCreateViewModel.Travel.Images.Add(new Image
+                //            {
+                //                ImageUrl = ImageUrl,
+                //                ImageName = FileName,
+                //                ImageFileSize = FileSize,
+                //                ImageFileType = FileType,
+                //            });
+
+                //        }
+                //    }
+                //}
+            }
+            return RedirectToAction("Index");
+        }
+
 
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> IndexAsync()
         {
             var user = await _userManager.GetUserAsync(User);
-            var organizsationUser = _parteiDbContext.Organizations.Where(u => u.Admin.Id.Equals(user.Id)).SingleOrDefault();
-
             var memberSelectList = new ApplicationUserMultiselectModel()
             {
-                ApplicationUsers = _parteiDbContext.ApplicationUsers.Include(a => a.UserRoles).ThenInclude(a => a.Role).Include(m => m.Member).Where(a => a.Member.Organization.Name.Equals(organizsationUser.Name)).ToList(),
+                ApplicationUsers = _parteiDbContext.ApplicationUsers.Include(a => a.UserRoles).ThenInclude(a => a.Role).Include(m => m.Member).Where(a => a.Member.OrganizationId == user.OrgranizationId).ToList(),
                 SelectedMemberIDs = new List<String>()
             };
 
-            return View(memberSelectList);
+            var managerModel = new ManagerViewModel()
+            {
+                ApplicationUserMultiselectModel = memberSelectList,
+                Organization = _parteiDbContext.Organizations.Single(o => o.Id == user.OrgranizationId)
+            }; 
+            return View(managerModel);
         }
 
         [HttpPost]

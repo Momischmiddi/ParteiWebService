@@ -158,5 +158,7 @@ namespace ParteiWebService.Controllers
 
             return PartialView("_SelectStopList", tripCreateViewModel);
         }
+
+
     }
 }

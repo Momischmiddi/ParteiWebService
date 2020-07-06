@@ -1,60 +1,97 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using DataAccessLibrary.Models
+@using ParteiWebService.ViewModel
 
 @inject UserManager<ApplicationUser> userManager
 @{
     ViewData["Title"] = "Index";
 }
-@model ApplicationUserMultiselectModel
-<h1>Administratoren verwalten</h1>
+@model ManagerViewModel
+<div class="row">
+    <div class="col-8">
+        <div class="card shadow mb-4">
+            <div class="card-header">
+                <div class="d-sm-flex align-items-center justify-content-between">
+                    <h5 class="m-0 ">Mangager verwalten</h5>
+                    <a href="#" id="header_modal" name="addManager" class="d-none d-sm-inline-block btn btn-primary btn-icon-split" data-toggle="modal" data-target="#addManager">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-user-plus"></i>
+                        </span>
+                        <span class="text">Manager hinzufügen</span>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Benutername</th>
+                                <th>Email</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var member in Model.ApplicationUserMultiselectModel.ApplicationUsers.Where(a => a.UserRoles.Any(i => i.Role.Name.Equals("Manager"))).ToList())
+                            {
+                                <tr>
+                                    <td>@member.UserName</td>
+                                    <td>@member.Email</td>
 
-<div class="card shadow mb-4">
-    <div class="card-header">
-        <div class="d-sm-flex align-items-center justify-content-between">
-            <h5 class="m-0 ">Mitgliederliste</h5>
-            <a href="#" id="header_modal" name="addManager" class="d-none d-sm-inline-block btn btn-primary btn-icon-split" data-toggle="modal" data-target="#addManager">
-                <span class="icon text-white-50">
-                    <i class="fas fa-user-plus"></i>
-                </span>
-                <span class="text">Manager hinzufügen</span>
-            </a>
+                                    <td>
+                                        <form asp-action="Delete" asp-route-id="@member.Id">
+                                            <button onclick='DeleteMember("@member.UserName")' href="#" class="d-none d-sm-inline-block btn btn-danger btn-circle">
+                                                <span class="icon">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </span>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>Benutername</th>
-                        <th>Email</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var member in Model.ApplicationUsers.Where(a => a.UserRoles.Any(i => i.Role.Name.Equals("Manager"))).ToList()) 
-                    {
-                        <tr>
-                            <td>@member.UserName</td>
-                            <td>@member.Email</td>
+    <div class="col-4">
 
-                            <td>
-                                <form asp-action="Delete" asp-route-id="@member.Id">
-                                    <button onclick='DeleteMember("@member.UserName")' href="#" class="d-none d-sm-inline-block btn btn-danger btn-circle">
-                                        <span class="icon">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </span>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+        <form asp-action="SaveImage" asp-controller="Manager" method="post" enctype="multipart/form-data">
+            <div class="row ">
+                <div class="col-9 w-100 nopadding">
+                    <div class="input-group">
+                        <div class="custom-file">
+                            <input name="organizationImage" type="file" class="custom-file-input" id="organizationImage" aria-describedby="organizationImage">
+                            <label class="custom-file-label" for="organizationImage">Bild Hochladen</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3 nopadding w-100">
+                    <button class="btn btn-primary w-100 ml-1"><i class="fas fa-save"></i></button>
+                </div>
+            </div>
+        </form>
+
+        <div class="row mt-3">
+            <img src="~/demoImages/23509.jpg" />
         </div>
     </div>
 </div>
 
 <div id="addAdminModalContainer">
-    <partial name="_AddManagerModal" model="Model" />
+    <partial name="_AddManagerModal" model="Model.ApplicationUserMultiselectModel" />
 </div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $('.custom-file-input').change(function (e) {
+            var files = [];
+            for (var i = 0; i < $(this)[0].files.length; i++) {
+                files.push($(this)[0].files[i].name);
+            }
+            $(this).next('.custom-file-label').html(files.join(', '));
+        });
+    </script>
+}
 
