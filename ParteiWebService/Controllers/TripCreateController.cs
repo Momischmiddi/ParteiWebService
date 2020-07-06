@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using ParteiWebService.Models;
 using ParteiWebService.StorageManagers;
 using ParteiWebService.ViewModel;
@@ -166,6 +168,28 @@ namespace ParteiWebService.Controllers
                     ImageFileType = null,
 
                 });
+            }
+            else
+            {
+                // COSMOS BEGIN
+                foreach(var image in tripCreateViewModel.Travel.Images)
+                {
+                    try
+                    {
+                        CosmosManager.Images.InsertOne(new CosmosDB.DBModels.Image
+                        {
+                            BlobUrl = image.ImageUrl,
+                            Id = CosmosManager.Images.FindSync<CosmosDB.DBModels.Image>(new BsonDocument()).ToList().Count,
+                            ImageName = image.ImageName,
+                            TravelId = image.TravelId
+                        });
+                    }
+                    catch(Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                }
+                // COSMOS END
             }
 
             Console.WriteLine(tripCreateViewModel.Travel.Description);

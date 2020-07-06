@@ -8,6 +8,9 @@ namespace ParteiWebService.CosmosDB.DBModels
         [BsonElement("ImageId")]
         public Guid ImageId { get; set; } // Shard Key
 
+        [BsonElement("Id")]
+        public int Id { get; set; } // Shard Key
+
         [BsonElement("ImageName")]
         public string ImageName { get; set; }
 
@@ -15,7 +18,7 @@ namespace ParteiWebService.CosmosDB.DBModels
         public string BlobUrl { get; set; }
 
         [BsonElement("TravelId")]
-        public Guid TravelId { get; set; }
+        public int TravelId { get; set; }
 
         public Image()
         {
