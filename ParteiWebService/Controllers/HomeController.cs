@@ -176,7 +176,7 @@ namespace ParteiWebService.Controllers
             return File(content, contentType, fileName);
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> PdfExport()
         {
             var members = await _parteiDbContext.Members.ToListAsync();
