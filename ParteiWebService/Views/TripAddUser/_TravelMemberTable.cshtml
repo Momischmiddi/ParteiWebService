@@ -21,49 +21,49 @@
             <tbody>
                 @foreach (TravelMember travelMember in Model.TravelMembers)
                 {
-                    <tr id="@travelMember.Member.ID">
-                        <td>
-                            @* Bei dem Button muss dann noch die onClick hingebogen werden! *@
-                            <button onclick='deleteTravelMemberData("@travelMember.Member.ID", "@Model.Travel.TravelId")' href="#" class="d-none d-sm-inline-block btn btn-danger btn-circle">
-                                <span class="icon">
-                                    <i class="fas fa-trash-alt"></i>
-                                </span>
-                            </button>
-                        </td>
-                        <td>@travelMember.Member.PreName</td>
-                        <td>@travelMember.Member.LastName</td>
-                        @*<td>
-                                <div class="form-check">
-                                    @if (travelMember.ActualCosts == travelMember.TargetCosts)
-                                    {
-                                        <input type="checkbox" checked class="form-check-input" id="checkbox_@travelMember.ID" onclick="updateTravelCost(@travelMember.ID)">
-                                    }
-                                    else
-                                    {
-                                        <input type="checkbox" class="form-check-input" id="checkbox_@travelMember.ID" onclick="updateTravelCost(@travelMember.ID)">
-                                    }
-
-                                    <label class="form-check-label" for="exampleCheck1">Bezahlt</label>
-                                </div>
-                            </td>*@ @* Was genau macht er hier mit den Stops...? *@
-                        <td>
-                            <select id="inputState" onchange='updateStop("@travelMember.Member.ID",@Model.Travel.TravelId)' class="form-control form-control-sm">
-
-                                @foreach (Stop stop in Model.Stops)
-                                {
-                                    if (travelMember.StopId.Equals(stop.StopId) || travelMember.StopId.Equals(-1))
-                                    {
-                                        <option selected value="@stop.StopId">@stop.StopName</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@stop.StopId">@stop.StopName</option>
-                                    }
-                                }
-                            </select>
-                        </td>
-                    </tr>
+                <tr id="@travelMember.Member.ID">
+                    <td>
+                        @* Bei dem Button muss dann noch die onClick hingebogen werden! *@
+                        <button onclick='deleteTravelMemberData("@travelMember.Member.ID", "@Model.Travel.TravelId")' href="#" class="d-none d-sm-inline-block btn btn-danger btn-circle">
+                            <span class="icon">
+                                <i class="fas fa-trash-alt"></i>
+                            </span>
+                        </button>
+                    </td>
+                    <td>@travelMember.Member.PreName</td>
+                    <td>@travelMember.Member.LastName</td>
+                    @*<td>
+            <div class="form-check">
+                @if (travelMember.ActualCosts == travelMember.TargetCosts)
+                {
+                    <input type="checkbox" checked class="form-check-input" id="checkbox_@travelMember.ID" onclick="updateTravelCost(@travelMember.ID)">
                 }
+                else
+                {
+                    <input type="checkbox" class="form-check-input" id="checkbox_@travelMember.ID" onclick="updateTravelCost(@travelMember.ID)">
+                }
+
+                <label class="form-check-label" for="exampleCheck1">Bezahlt</label>
+            </div>
+        </td>*@ @*if (travelMember.StopId.Equals(stop.StopId) || travelMember.StopId.Equals(-1))
+        {
+            <option selected value="@stop.StopId">@stop.StopName</option>
+        }
+        else
+        {
+            <option value="@stop.StopId">@stop.StopName</option>
+        }*@
+                <td>
+                    <select id="@travelMember.Member.PreName" onchange='updateStop("@travelMember.Member.PreName", "@travelMember.Member.ID",@Model.Travel.TravelId)' class="form-control form-control-sm">
+
+                        @foreach (Stop stop in Model.Stops)
+                        {
+                            <option value="@stop.StopId">@stop.StopName</option>
+                        }
+                    </select>
+                </td>
+                </tr>
+                    }
                 @foreach (ExternalTravelMember externalTravelMember in Model.ExternalTravelMembers)
                 {
                     <tr id="@externalTravelMember.ExternalMember.ID" style="background:#d8d8d8">
@@ -78,21 +78,10 @@
                         <td>@externalTravelMember.ExternalMember.LastName</td>
                         @*<td>@externalTravelMember.ActualCosts/@externalTravelMember.TargetCosts</td>*@
                         <td>
-                            <select id="inputState" onchange='updateStopExternal("@externalTravelMember.ExternalMember.ID",@Model.Travel.TravelId)' class="form-control form-control-sm">
-                               @* @foreach (Stop stop in Model.Stops)
-                                {
-                                    <option value="@stop.StopId">@stop.StopName</option>
-                                }*@
+                            <select id="@externalTravelMember.ExternalMember.PreName" onchange='updateStopExternal("@externalTravelMember.ExternalMember.PreName", "@externalTravelMember.ExternalMember.ID",@Model.Travel.TravelId)' class="form-control form-control-sm">
                                 @foreach (Stop stop in Model.Stops)
                                 {
-                                    if (externalTravelMember.StopId.Equals(stop.StopId) || externalTravelMember.StopId.Equals(-1))
-                                    {
-                                        <option selected value="@stop.StopId">@stop.StopName</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@stop.StopId">@stop.StopName</option>
-                                    }
+                                    <option value="@stop.StopId">@stop.StopName</option>
                                 }
                             </select>
                         </td>
@@ -102,3 +91,12 @@
         </table>
     </div>
 }
+
+@*if (externalTravelMember.StopId.Equals(stop.StopId) || externalTravelMember.StopId.Equals(-1))
+    {
+        <option selected value="@stop.StopId">@stop.StopName</option>
+    }
+    else
+    {
+        <option value="@stop.StopId">@stop.StopName</option>
+    }*@

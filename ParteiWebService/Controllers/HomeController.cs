@@ -179,11 +179,10 @@ namespace ParteiWebService.Controllers
         [HttpGet]
         public async Task<IActionResult> PdfExport()
         {
-            var memberListServiceURL = "https://seniorenbobspdfservice.azurewebsites.net/PDFCreate/CreateMemberListPDF";
             var members = await _parteiDbContext.Members.ToListAsync();
             var model = ModelCreators.CreateMemberListPDFModel(members);
 
-            var postResult = await RequestHelper.SendPDFRequestAsync(memberListServiceURL, model);
+            var postResult = await RequestHelper.SendPDFRequestAsync(RequestHelper.EndPoint.CreateMemberListPDF ,model);
 
             if (postResult.StatusCode == HttpStatusCode.OK)
             {

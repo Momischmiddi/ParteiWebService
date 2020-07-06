@@ -13,15 +13,15 @@ using System.Text;
 using ParteiWebService.Utility;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Http;
+using MongoDB.Bson;
+using System.Collections.Generic;
 
 namespace ParteiWebService.Controllers
 {
     public class AdminController : Controller
     {
-
         public ParteiDbContext _parteiDbContext { get; }
         private readonly UserManager<ApplicationUser> _userManager;
-
 
         public AdminController(ParteiDbContext parteiDbContext, UserManager<ApplicationUser> userManager)
         {
@@ -29,21 +29,27 @@ namespace ParteiWebService.Controllers
             _userManager = userManager;
         }
 
-
         [Authorize]
         [HttpGet]
         public IActionResult Index()
         {
-            return View(_parteiDbContext.Organizations.Include(x => x.Admin).ToList());
+            // COSMOS BEGIN
+            var organizations = CosmosManager.Organizations.Find(new BsonDocument()).ToList();
+            return View(CosmosMapper.MapOrganizations(organizations, _parteiDbContext));
+            // COSMOS END
+
+            // SQLITE BEGIN
+            // var result =  _parteiDbContext.Organizations.Include(x => x.Admin).ToList();
+            // return View(result);
+            // SQLITE END
         }
 
-
-
         [HttpGet]
-        public async Task<IActionResult> CreateOrganization()
+        public IActionResult CreateOrganization()
         {
             return View(new Organization());
         }
+
         [HttpPost]
         public async Task<IActionResult> CreateOrganization(Organization organization, IFormFile organizationImage)
         {
@@ -51,9 +57,19 @@ namespace ParteiWebService.Controllers
             organization.Admin.PasswordHash = Guid.NewGuid().ToString();
             organization.Admin.UserName = organization.Admin.Id;
 
+            // COSMOS BEGIN
+            CosmosManager.Organizations.InsertOne(new CosmosDB.DBModels.Organization
+            {
+                AdminId = organization.Admin.Id,
+                Name = organization.Name,
+                OrganizationImageUrl = organization.OrganizationImage,
+                Id = CosmosManager.Organizations.Find(new BsonDocument()).ToList().Last().Id + 1
+            });
+            // COSMOS END
+            
             _parteiDbContext.Add(organization);
             _parteiDbContext.SaveChanges();
-
+             
             organization.Admin.OrgranizationId = organization.Id;
             _parteiDbContext.SaveChanges();
 
@@ -65,7 +81,6 @@ namespace ParteiWebService.Controllers
             emailCode = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(emailCode));
             passwordCode = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(passwordCode));
 
-
             var fullUrl = this.Url.Action("SetPassword", "Account", new { userId = organization.Admin.Id, emailCode = emailCode, passwordCode = passwordCode }, this.Request.Scheme);
 
             MailManager mailManager = new MailManager();
@@ -75,7 +90,6 @@ namespace ParteiWebService.Controllers
              organization.Admin.Email,
             organization.Admin.UserName
             );
-
 
             return RedirectToAction("Index");
         }

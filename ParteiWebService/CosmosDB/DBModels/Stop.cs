@@ -8,7 +8,7 @@ namespace ParteiWebService.CosmosDB.DBModels
         [BsonElement("StopId")]
         public Guid StopId { get; set; } // Shard Key
 
-        [BsonElement("stopname")]
+        [BsonElement("Stopname")]
         public string StopName { get; set; }
 
         public Stop()

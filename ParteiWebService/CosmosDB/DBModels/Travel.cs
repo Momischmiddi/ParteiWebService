@@ -7,40 +7,30 @@ namespace ParteiWebService.CosmosDB.DBModels
 {
     public class Travel
     {
-        [BsonId]
-        public ObjectId _id { get; set; }
-
         [BsonElement("TravelId")]
         public Guid TravelId { get; set; } // Shard Key
 
-        [BsonElement("destination")]
+        [BsonElement("Destination")]
         public String Destination { get; set; }
 
-        [BsonElement("startdate")]
+        [BsonElement("Startdate")]
         public DateTime StartDate { get; set; }
 
-        [BsonElement("enddate")]
+        [BsonElement("Enddate")]
         public DateTime EndDate { get; set; }
 
-        [BsonElement("description")]
+        [BsonElement("Description")]
         public string Description { get; set; }
 
-        [BsonElement("departure")]
+        [BsonElement("Departure")]
         public string Departure { get; set; }
 
-        [BsonElement("costs")]
-        public double Costs { get; set; }
-
-        [BsonElement("maxtravelers")]
+        [BsonElement("MaxTravelers")]
         public int MaxTraveler { get; set; }
-
-        [BsonElement("imageids")]
-        public List<string> ImageIds { get; set; }
 
         public Travel()
         {
             TravelId = Guid.NewGuid();
-            ImageIds = new List<string>();
         }
     }
 }
