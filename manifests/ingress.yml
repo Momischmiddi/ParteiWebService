@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+    name: "parteicluster-db10"
+    labels:
+        app: "parteicluster-db10"
+    annotations:
+        kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+    rules:
+        - host: parteicluster2873-parteicluster-db10.96869eb8fa844f458549.germanywestcentral.aksapp.io
+          http:
+            paths:
+            - path: /
+              backend:
+                serviceName: "parteicluster-db10"
+                servicePort: 80
