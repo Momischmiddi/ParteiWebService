@@ -12,7 +12,6 @@ namespace ParteiWebService.MicroServiceHelpers.PDFService
     public class RequestHelper
     {
         public static string PDFMicroServiceUrl = "https://parteipdfgenerator.azurewebsites.net/PDFCreate/";
-
         public enum EndPoint
         {
             CreateMemberListPDF,

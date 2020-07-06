@@ -11,13 +11,13 @@ namespace ParteiWebService.CosmosDB.DBModels
         [BsonElement("Targetcosts")]
         public double TargetCosts { get; set; }
 
-        [BsonElement("actualcosts")]
+        [BsonElement("Actualcosts")]
         public double ActualCosts { get; set; }
 
-        [BsonElement("travelid")]
-        public Guid TravelId { get; set; }
+        [BsonElement("Travelid")]
+        public int TravelId { get; set; }
 
-        [BsonElement("stopid")]
+        [BsonElement("Stopid")]
         public Guid StopId { get; set; }
 
         public TravelMember()
