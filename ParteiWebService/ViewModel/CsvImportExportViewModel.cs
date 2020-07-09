@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace ParteiWebService.ViewModel
 {
-    public class HomeViewModel
+    public class CsvImportExportViewModel
     {
         public IFormFile File { get; set; }
         public int OrganisationId { get; set; }
 
-        public HomeViewModel (IFormFile file, int organisationId)
+        public CsvImportExportViewModel (IFormFile file, int organisationId)
         {
             this.File = file;
             this.OrganisationId = organisationId;
         }
 
-        public HomeViewModel()
+        public CsvImportExportViewModel()
         {
 
         }

@@ -198,7 +198,7 @@ namespace ParteiWebService.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CsvImport(HomeViewModel homeViewModel)
+        public async Task<IActionResult> CsvImport(CsvImportExportViewModel homeViewModel)
         {
 
             var file = homeViewModel.File;
