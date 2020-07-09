@@ -5,13 +5,6 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM ubuntu:trusty
-RUN sudo apt-get -y update
-RUN sudo apt-get -y upgrade
-RUN sudo apt-get install -y sqlite3 libsqlite3-dev
-RUN /usr/bin/sqlite3 /cloudbobdb.db
-CMD /bin/bash
-
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["ParteiWebService/ParteiWebService.csproj", "ParteiWebService/"]
@@ -22,6 +15,8 @@ RUN dotnet build "ParteiWebService.csproj" -c Release -o /app/build
 
 FROM build AS publish
 RUN dotnet publish "ParteiWebService.csproj" -c Release -o /app/publish
+
+COPY ParteiWebService/cloudbobdb.db ParteiWebService/
 
 FROM base AS final
 WORKDIR /app
