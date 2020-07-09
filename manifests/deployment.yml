@@ -1,16 +1,16 @@
 apiVersion : apps/v1beta1
 kind: Deployment
 metadata:
-  name: "parteicluster-db10"
+  name: "kubernetesparteicluster-b388"
 spec:
   replicas: 2
   template:
     metadata:
       labels:
-        app: "parteicluster-db10"
+        app: "kubernetesparteicluster-b388"
     spec:
       containers:
-        - name: "parteicluster-db10"
-          image: "parteicluster.azurecr.io/parteicluster"
+        - name: "kubernetesparteicluster-b388"
+          image: "parteicluster.azurecr.io/kubernetesparteicluster"
           ports:
           - containerPort: 80
