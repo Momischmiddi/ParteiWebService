@@ -16,6 +16,7 @@ COPY ["ParteiWebService/cloudbobdb.db", "/app/"]
 COPY ["ParteiWebService/cloudbobdb.db", "/"]
 COPY ["ParteiWebService/cloudbobdb.db", "/app"]
 
+
 RUN dotnet restore "ParteiWebService/ParteiWebService.csproj"
 COPY . .
 WORKDIR "/src/ParteiWebService"

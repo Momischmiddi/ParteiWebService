@@ -17,6 +17,14 @@
     <Content Remove="Views\Home\_CsvExport.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="cloudbobdb.db" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="cloudbobdb.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="wwwroot\export\" />
   </ItemGroup>
   <ItemGroup>
