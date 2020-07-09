@@ -92,6 +92,8 @@ namespace ParteiWebService.Controllers
         [HttpPost]
         public async Task<IActionResult> CsvImport(IFormFile file)
         {
+            int organisationId = 2; // TODO hier noch die Anpassung machen!!!
+
 
             if (file == null)
             {
@@ -118,7 +120,7 @@ namespace ParteiWebService.Controllers
 
             foreach (var modelMember in CSVExportManager.ReadMemberCSV(path).Users)
             {
-                _parteiDbContext.Add(CSVExportManager.MapModelMemberToMember(modelMember, Guid.NewGuid().ToString()));
+                _parteiDbContext.Add(CSVExportManager.MapModelMemberToMember(modelMember, Guid.NewGuid().ToString(), organisationId));
             }
             _parteiDbContext.SaveChanges();
 

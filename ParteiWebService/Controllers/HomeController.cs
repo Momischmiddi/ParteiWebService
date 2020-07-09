@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using ParteiWebService.CSV_Export;
 using ParteiWebService.MicroServiceHelpers.PDFService;
 using ParteiWebService.Utility;
+using ParteiWebService.ViewModel;
 
 namespace ParteiWebService.Controllers
 {
@@ -196,8 +197,11 @@ namespace ParteiWebService.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CsvImport(IFormFile file)
+        public async Task<IActionResult> CsvImport(HomeViewModel homeViewModel)
         {
+
+            var file = homeViewModel.File;
+            var organisationId = homeViewModel.OrganisationId;
 
             if (file == null)
             {
@@ -208,7 +212,7 @@ namespace ParteiWebService.Controllers
                 throw new FileNotFoundException("Es handelt sich nicht um eine CSV-Datei.");
             }
 
-            var fileName = System.IO.Path.GetFileName(file.FileName);
+            var fileName = Path.GetFileName(file.FileName);
             var path = "wwwroot/export/" + fileName;
 
             if (System.IO.File.Exists(path))
@@ -224,7 +228,7 @@ namespace ParteiWebService.Controllers
 
             foreach (var modelMember in CSVExportManager.ReadMemberCSV(path).Users)
             {
-                _parteiDbContext.Add(CSVExportManager.MapModelMemberToMember(modelMember, Guid.NewGuid().ToString()));
+                _parteiDbContext.Add(CSVExportManager.MapModelMemberToMember(modelMember, Guid.NewGuid().ToString(), organisationId)); // add OrganisationId
             }
             _parteiDbContext.SaveChanges();
 
@@ -275,6 +279,41 @@ namespace ParteiWebService.Controllers
                 role.Name = "Employee";
                 await _roleManager.CreateAsync(role);
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SendMailToSomeOneAsync(SendMailViewModel sendMailViewModel)
+        {       
+            // Was steht im Betreff?
+            String subject = "Mitgliederliste";
+
+            // Was soll gesendet werden?
+            DateTime today = DateTime.Today;
+            String content = "Auszug aus der Mitgliederliste vom " + today; 
+
+            // An wen soll gesendet werden?
+            var destinationAddress = sendMailViewModel.DestinationAddress;
+            var destinationName = sendMailViewModel.DestinationName;
+
+            var members = await _parteiDbContext.Members.ToListAsync();
+            var model = ModelCreators.CreateMemberListPDFModel(members);
+
+            var postResult = await RequestHelper.SendPDFRequestAsync(RequestHelper.EndPoint.CreateMemberListPDF, model);
+
+            if (postResult.StatusCode == HttpStatusCode.OK)
+            {
+                var mailPdfContent = await RequestHelper.GetPDFContentAsync(postResult);
+
+                MailManager mailManager = new MailManager();
+                await mailManager.SendEmail(subject, content, destinationAddress, destinationName, mailPdfContent, "NameDerDatei");
+
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return BadRequest(postResult.Content);
+            }
+                                
         }
 
     }

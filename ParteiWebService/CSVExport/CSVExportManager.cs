@@ -52,7 +52,7 @@ namespace ParteiWebService.CSV_Export
             return mb;
         }
 
-        public static Member MapModelMemberToMember(User modelMember,string id)
+        public static Member MapModelMemberToMember(User modelMember,string id, int organisationId)
         {
             Member member = new Member();
             member.ID = id;
@@ -63,7 +63,7 @@ namespace ParteiWebService.CSV_Export
             member.Contribution = modelMember.Contribution;
             member.Adress = modelMember.Address;
             member.PostCode = modelMember.Postal;
-
+            member.OrganizationId = organisationId;
             return member;
         }
 
