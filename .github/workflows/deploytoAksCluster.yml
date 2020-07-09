@@ -42,8 +42,8 @@ jobs:
       with:
         namespace: kubernetesparteicluster81f5
         manifests: |
-          manifests/deployment-1.yml
-          manifests/service-1.yml
+          manifests/deployment.yml
+          manifests/service.yml
         images: |
           parteicluster.azurecr.io/kubernetesparteicluster:${{ github.sha }}
         imagepullsecrets: |

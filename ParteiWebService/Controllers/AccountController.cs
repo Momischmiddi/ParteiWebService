@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using DataAccessLibrary.DataAccess;
 using DataAccessLibrary.Models;
@@ -39,7 +40,16 @@ namespace ParteiWebService.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByNameAsync(loginModel.Username);
+                ApplicationUser user = null;
+
+                try
+                {
+                    user = await _userManager.FindByNameAsync(loginModel.Username);
+                }
+                catch(Exception e)
+                {
+                    return new BadRequestObjectResult("Fehleler im Login: " + e.Message);
+                }
 
                 if (user != null)
                 {
