@@ -16,7 +16,7 @@ RUN dotnet build "ParteiWebService.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "ParteiWebService.csproj" -c Release -o /app/publish
 
-COPY ParteiWebService/cloudbobdb.db ParteiWebService/
+COPY ParteiWebService/cloudbobdb.db /app/
 
 FROM base AS final
 WORKDIR /app
