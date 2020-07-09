@@ -73,9 +73,16 @@ namespace ParteiWebService.Controllers
             });
             */
             var user = await _userManager.GetUserAsync(User);
-            var organizationId = user.OrgranizationId; // TODO an die View mit übergeben!
+            int organizationId = user.OrgranizationId; // TODO an die View mit übergeben!
             var allMembers = _parteiDbContext.Members.Where(a => a.Organization.Id == user.OrgranizationId).ToList();
-            return View(allMembers);
+
+            var homeViewModel = new HomeViewModel
+            {
+                Members = allMembers,
+                OrganizationId = organizationId
+            };
+
+            return View(homeViewModel);
 
         }
 

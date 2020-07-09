@@ -1,10 +1,11 @@
 ﻿@using DataAccessLibrary.Models
-@model List<Member>
+@using ParteiWebService.ViewModel
+@model HomeViewModel
 @{
     ViewData["Title"] = "Index";
 
     Microsoft.AspNetCore.Http.IFormFile file = null;
-    var organisationId = 2;
+    var organisationId = Model.OrganizationId;
 
 }
 
@@ -14,7 +15,7 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Mitgliederverwaltung</h1>
     </div>
-    @if (Model.Count > 0)
+    @if (Model.Members.Count > 0)
     {
         <!-- Content Row -->
         <div class="row">
@@ -25,7 +26,7 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Gesamtbeitrag</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Math.Round(@Model.Sum(model => model.Contribution), 2)€</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Math.Round(@Model.Members.Sum(model => model.Contribution), 2)€</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-money-bill fa-2x text-gray-300"></i>
@@ -42,7 +43,7 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Durchschnittsbeitrag</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">@((Model.Sum(model => model.Contribution) / Model.Count).ToString("0.##"))€</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@((Model.Members.Sum(model => model.Contribution) / Model.Members.Count).ToString("0.##"))€</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -59,7 +60,7 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Durchschnittsalter</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">@(Model.Sum(model => ParteiWebService.Utility.DateOfBirth.CalculateYourAge(model.DateOfBirth).Item1) / Model.Count())</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@(Model.Members.Sum(model => ParteiWebService.Utility.DateOfBirth.CalculateYourAge(model.DateOfBirth).Item1) / Model.Members.Count())</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-users fa-2x text-gray-300"></i>
@@ -87,19 +88,19 @@
             </div>
         </div>
         <div class="card-body">
-            @if (Model.Count > 0)
+            @if (Model.Members.Count > 0)
             {
                 <div class="table-responsive">
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
-                                <th>@Html.DisplayNameFor(model => model[0].PreName)</th>
-                                <th>@Html.DisplayNameFor(model => model[0].LastName)</th>
-                                <th>@Html.DisplayNameFor(model => model[0].PostCode)</th>
-                                <th>@Html.DisplayNameFor(model => model[0].Home)</th>
-                                <th>@Html.DisplayNameFor(model => model[0].Adress)</th>
-                                <th>@Html.DisplayNameFor(model => model[0].DateOfBirth)</th>
-                                <th>@Html.DisplayNameFor(model => model[0].Contribution)</th>
+                                <th>@Html.DisplayNameFor(model => model.Members[0].PreName)</th>
+                                <th>@Html.DisplayNameFor(model => model.Members[0].LastName)</th>
+                                <th>@Html.DisplayNameFor(model => model.Members[0].PostCode)</th>
+                                <th>@Html.DisplayNameFor(model => model.Members[0].Home)</th>
+                                <th>@Html.DisplayNameFor(model => model.Members[0].Adress)</th>
+                                <th>@Html.DisplayNameFor(model => model.Members[0].DateOfBirth)</th>
+                                <th>@Html.DisplayNameFor(model => model.Members[0].Contribution)</th>
                                 @if (User.IsInRole("Manager"))
                                 {
                                     <th></th>
@@ -108,7 +109,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var member in Model)
+                            @foreach (var member in Model.Members)
                             {
                                 <tr>
                                     <td>@member.PreName </td>
