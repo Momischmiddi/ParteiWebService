@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using ParteiWebService.StorageManagers;
+using System;
 using System.IO;
 
 namespace ParteiWebService
@@ -14,6 +15,8 @@ namespace ParteiWebService
             foreach(var f in Directory.GetFiles(Directory.GetCurrentDirectory())) {
                 allFiles += f + ", ";
             }
+
+            allFiles += Environment.NewLine + Environment.NewLine;
 
             BlobManager.Setup();
             CosmosManager.Setup();
