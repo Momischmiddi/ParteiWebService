@@ -1,5 +1,5 @@
 ﻿@using ParteiWebService.ViewModel
-@model HomeViewModel
+@model CsvImportExportViewModel
 
 <div class="modal fade" id="importExportModal" tabindex="-1" role="dialog" aria-labelledby="importExportModal" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
@@ -22,11 +22,6 @@
                     <div class="form-group col-6">
                         <div class="form-group">
                             <form asp-action="CsvImport" asp-controller="Home" method="post" enctype="multipart/form-data">
-                                @*
-        <input asp-for="File" name="customFile" id="customFile" class="custom-file-input" type="file" accept=".csv" />
-        <label class="custom-file-label" style="margin-right:1.5rem;" for="customFile">Importieren</label>
-        <button type="submit" class="btn btn-primary">Import</button> @* TODO Styling
-                                *@
                                 @Html.HiddenFor(organisationId => organisationId.OrganisationId)
                                 <input asp-for="File" type="file" />
                                 <button type="submit" class="btn btn-primary">Import</button>

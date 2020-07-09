@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 
     Microsoft.AspNetCore.Http.IFormFile file = null;
-    var organisationId = 2; // TODO noch auf den richtigen Wert zugreifen!
+    var organisationId = 2;
 
 }
 
@@ -229,7 +229,7 @@
     </form>*@
 
 <partial name="_AddMember" model="new Member()" />
-<partial name="_ImportExportCsv" model="new ParteiWebService.ViewModel.HomeViewModel(file, organisationId)" />
+<partial name="_ImportExportCsv" model="new ParteiWebService.ViewModel.CsvImportExportViewModel(file, organisationId)" />
 <partial name="_SendMail" model="new ParteiWebService.ViewModel.SendMailViewModel()"/>
 
 <div id="memberPartialContainer">
