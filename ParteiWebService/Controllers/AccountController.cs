@@ -48,7 +48,7 @@ namespace ParteiWebService.Controllers
                 }
                 catch(Exception e)
                 {
-                    return new BadRequestObjectResult("Fehleler im Login: " + e.Message + "   Dirs: " + Program.allFiles);
+                    return new BadRequestObjectResult("Fehleler im Login: " + e.Message);
                 }
 
                 if (user != null)
