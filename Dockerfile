@@ -9,17 +9,10 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["ParteiWebService/ParteiWebService.csproj", "ParteiWebService/"]
 
-COPY ["ParteiWebService/cloudbobdb.db", "ParteiWebService/"]
-COPY ["ParteiWebService/cloudbobdb.db", "/app/build"]
-COPY ["ParteiWebService/cloudbobdb.db", "/app/publish"]
-COPY ["ParteiWebService/cloudbobdb.db", "/app/"]
-COPY ["ParteiWebService/cloudbobdb.db", "/"]
-COPY ["ParteiWebService/cloudbobdb.db", "/app"]
-
-
 RUN dotnet restore "ParteiWebService/ParteiWebService.csproj"
 COPY . .
 WORKDIR "/src/ParteiWebService"
+
 RUN dotnet build "ParteiWebService.csproj" -c Release -o /app/build
 
 FROM build AS publish
