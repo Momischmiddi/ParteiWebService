@@ -73,6 +73,7 @@ namespace ParteiWebService.Controllers
             });
             */
             var user = await _userManager.GetUserAsync(User);
+            var organizationId = user.OrgranizationId; // TODO an die View mit übergeben!
             var allMembers = _parteiDbContext.Members.Where(a => a.Organization.Id == user.OrgranizationId).ToList();
             return View(allMembers);
 
@@ -281,7 +282,7 @@ namespace ParteiWebService.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> SendMailToSomeOneAsync(SendMailViewModel sendMailViewModel)
         {       
             // Was steht im Betreff?
@@ -305,7 +306,7 @@ namespace ParteiWebService.Controllers
                 var mailPdfContent = await RequestHelper.GetPDFContentAsync(postResult);
 
                 MailManager mailManager = new MailManager();
-                await mailManager.SendEmail(subject, content, destinationAddress, destinationName, mailPdfContent, "NameDerDatei");
+                await mailManager.SendEmail(subject, content, destinationAddress, destinationName, mailPdfContent, "Mitgliederliste.pdf");
 
                 return RedirectToAction("Index");
             }
