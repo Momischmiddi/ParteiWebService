@@ -3,13 +3,6 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-    
-    - env:
-      - name: BLOB_STORAGE_KEY
-        value: "DefaultEndpointsProtocol=https;AccountName=parteiblobstorage;AccountKey=LrRrCznOx4SFyeGeBGOW53ndE43LQWN2wFmoIgjA7AobLvECbGVU8iLuoEXXmV8zv+Bl2B3nosGs+RdhZ9hwcQ==;EndpointSuffix=core.windows.net"
-      - name: COSMOS_DB_KEY
-        value: "LwY1uc8q1gBKskWzATsVaZONh4xBP6WjGQuG5fH4qSGfYJYnHuxBqnF9HyyT8R2Kmm4WWmhk4Sdu80zgKHqPfw=="
-    
     - uses: actions/checkout@master
     
     - uses: azure/docker-login@v1
