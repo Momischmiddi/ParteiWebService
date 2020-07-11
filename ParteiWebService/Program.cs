@@ -10,6 +10,8 @@ namespace ParteiWebService
     {
         public static void Main(string[] args)
         {
+            BlobManager.Setup();
+            CosmosManager.Setup();
             CreateHostBuilder(args).Build().Run();
         }
 
