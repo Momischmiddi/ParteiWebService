@@ -14,7 +14,7 @@ namespace ParteiWebService
         public static IMongoCollection<TravelMember> TravelMembers;
         public static IMongoCollection<TravelStop> TravelStops;
 
-        public static void Setup()
+        public static void Setup(string key)
         {
             try {
                 MongoClientSettings settings = new MongoClientSettings();
@@ -25,7 +25,7 @@ namespace ParteiWebService
                 settings.RetryWrites = false;
 
                 MongoIdentity identity = new MongoInternalIdentity("parteidb", "parteimongostorage");
-                MongoIdentityEvidence evidence = new PasswordEvidence(Credentials.CosmosPasswordEvidence);
+                MongoIdentityEvidence evidence = new PasswordEvidence(key);
 
                 settings.Credential = new MongoCredential("SCRAM-SHA-1", identity, evidence);
 

@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ParteiWebService.Services;
 using System.IO;
+using ParteiWebService.StorageManagers;
+using System;
 
 namespace ParteiWebService
 {
@@ -25,6 +27,8 @@ namespace ParteiWebService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            BlobManager.Setup(Environment.GetEnvironmentVariable("BLOB_STORAGE_KEY"));
+            CosmosManager.Setup(Environment.GetEnvironmentVariable("COSMOS_DB_KEY"));
 
             services.AddIdentity<ApplicationUser, ApplicationRole>(config =>
             {

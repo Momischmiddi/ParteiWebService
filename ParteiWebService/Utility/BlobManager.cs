@@ -144,11 +144,11 @@ namespace ParteiWebService.StorageManagers
             }
         }
 
-        public static void Setup()
+        public static void Setup(string key)
         {
             try
             {
-                BlobServiceClient blobServiceClient = new BlobServiceClient(Credentials.BlobServiceClientKey);
+                BlobServiceClient blobServiceClient = new BlobServiceClient(key);
                 imageBlobContainer = blobServiceClient.GetBlobContainerClient("images");
                 travelImageBlobContainer = blobServiceClient.GetBlobContainerClient("travelimages");
             }
