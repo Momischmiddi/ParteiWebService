@@ -1,5 +1,10 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
+FROM ubuntu:trusty
+RUN sudo apt-get -y update
+RUN sudo apt-get -y upgrade
+RUN sudo apt-get install -y sqlite3 libsqlite3-dev
+
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
 WORKDIR /app
 EXPOSE 80
