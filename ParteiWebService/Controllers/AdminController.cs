@@ -98,7 +98,7 @@ namespace ParteiWebService.Controllers
              $"Bitte bestätige deine Registrierung <a href='{HtmlEncoder.Default.Encode(fullUrl)}'>Hier klicken</a>.",
              organization.Admin.Email,
             organization.Admin.UserName
-            );
+            ); 
 
             return RedirectToAction("Index");
         }
