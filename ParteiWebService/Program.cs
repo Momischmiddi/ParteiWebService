@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using ParteiWebService.StorageManagers;
+using System;
+using System.IO;
 
 namespace ParteiWebService
 {

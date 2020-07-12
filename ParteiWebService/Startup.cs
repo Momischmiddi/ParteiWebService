@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ParteiWebService.Services;
+using System.IO;
 
 namespace ParteiWebService
 {
