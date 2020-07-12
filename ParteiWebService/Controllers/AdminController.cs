@@ -56,8 +56,7 @@ namespace ParteiWebService.Controllers
             var i = organizationImage;
             organization.Admin.PasswordHash = Guid.NewGuid().ToString();
             organization.Admin.UserName = organization.Admin.Id;
-
-            // COSMOS BEGIN
+            // COSMOS BEGIN 
 
             int id = -1;
             foreach(var org in CosmosManager.Organizations.Find(new BsonDocument()).ToList())
