@@ -22,9 +22,14 @@
                     <div class="form-group col-6">
                         <div class="form-group">
                             <form asp-action="CsvImport" asp-controller="Home" method="post" enctype="multipart/form-data">
-                                @Html.HiddenFor(organisationId => organisationId.OrganisationId)
-                                <input asp-for="File" type="file" />
-                                <button type="submit" class="btn btn-primary">Import</button>
+                                <div class="row">
+                                    @Html.HiddenFor(organisationId => organisationId.OrganisationId)
+                                    <input asp-for="File" type="file" id="customFile" class="custom-file-input" />
+                                    <label class="custom-file-label" style="margin-right:1.5rem;" for="customFile">Datei auswählen</label>
+                                </div>
+                                <div class="row mt-3">
+                                    <button type="submit" class="btn btn-primary">Import</button>
+                                </div>
                             </form>
                         </div>
                     </div>
