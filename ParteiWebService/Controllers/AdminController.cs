@@ -58,12 +58,22 @@ namespace ParteiWebService.Controllers
             organization.Admin.UserName = organization.Admin.Id;
 
             // COSMOS BEGIN
+
+            int id = -1;
+            foreach(var org in CosmosManager.Organizations.Find(new BsonDocument()).ToList())
+            {
+                if(org.Id > id)
+                {
+                    id = org.Id;
+                }
+            }
+            
             CosmosManager.Organizations.InsertOne(new CosmosDB.DBModels.Organization
             {
                 AdminId = organization.Admin.Id,
                 Name = organization.Name,
                 OrganizationImageUrl = organization.OrganizationImage,
-                Id = CosmosManager.Organizations.Find(new BsonDocument()).ToList().Last().Id + 1
+                Id = id +1
             });
             // COSMOS END
             
